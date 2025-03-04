@@ -4,48 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diabetes Insights Dashboard</title>
-    
-    <!-- Styles -->
     <link rel="stylesheet" href="static/css/style.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
-
-    <!-- JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body>
     <div class="container">
         <nav class="sidebar">
             <h2>Diabetes Insights</h2>
             <ul>
-                <li><a href="index.html" class="active">🏠 Overview</a></li>
-                <li><a href="diabetes_trends.html">📈 Diabetes Trends</a></li>
-                <li><a href="health_factors.html">⚕️ Health Related Factors</a></li>
-                <li><a href="health_disparities.html">📊 Health Disparities</a></li>
+                <li><a href="index.html" class="active">Overview</a></li>
+                <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
+                <li><a href="health_factors.html">Health Related Factors</a></li>
+                <li><a href="health_disparities.html">Health Disparities</a></li>
             </ul>            
         </nav>
 
         <main class="content">
             <header>
-                <h1>Diabetes Insights Dashboard</h1>
+                <h1 class="dashboard-title">Diabetes Insights Dashboard</h1>
             </header>
             
-            <!-- Summary Section -->
+            <!-- Filter Buttons -->
+            <div class="filters">
+                <button class="filter-btn age" onclick="showFilter('age')">Age</button>
+                <button class="filter-btn gender" onclick="showFilter('sex')">Gender</button>
+                <button class="filter-btn education" onclick="showFilter('education')">Education</button>
+            </div>            
+
+            <!-- Filter Options -->
+            <div id="filter-options">
+                <div id="age-filters" class="filter-group">
+                    <label><input type="checkbox" value="18-44"> 18-44</label>
+                    <label><input type="checkbox" value="45-64"> 45-64</label>
+                    <label><input type="checkbox" value="65-74"> 65-74</label>
+                    <label><input type="checkbox" value="75+"> 75+</label>
+                </div>
+                <div id="sex-filters" class="filter-group">
+                    <label><input type="checkbox" value="Male"> Male</label>
+                    <label><input type="checkbox" value="Female"> Female</label>
+                </div>
+                <div id="education-filters" class="filter-group">
+                    <label><input type="checkbox" value="High School"> High School</label>
+                    <label><input type="checkbox" value="Some College"> Some College</label>
+                    <label><input type="checkbox" value="College Graduate"> College Graduate</label>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
             <section class="summary-cards">
-                <div class="card" id="totalCasesCard">
-                    <span class="icon">🏥</span>
-                    <p id="totalCases">Total Diabetes Cases: <span class="count">0</span></p>
-                </div>
+                <div class="card">
+                    <p>Total Diabetes Cases: <span id="totalCasesCount" class="count">0</span></p>
+                </div>                
                 <div class="card" id="highestAgeGroupCard">
-                    <span class="icon">🏆</span>
-                    <p id="highestAgeGroup">Highest Affected Age Group: <span class="count">0</span></p>
-                </div>
-                <div class="card" id="topRiskFactorCard">
-                    <span class="icon">⚠️</span>
-                    <p id="topRiskFactor">Top Risk Factor: <span class="risk-text">Loading...</span></p>
-                </div>
+                    <p>Highest Affected Age Group: <span id="highestAgeGroup">Loading...</span></p>
+                </div>                
             </section>
         </main>
     </div>

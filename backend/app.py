@@ -3,9 +3,9 @@ import pandas as pd
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend requests
+CORS(app)
 
-# Load preprocessed data
+# Load dataset (Make sure this path is correct)
 DATA_PATH = "../data/preprocessed_data.csv"
 df = pd.read_csv(DATA_PATH)
 
