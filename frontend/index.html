@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Insights Dashboard</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="static/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <h2>Diabetes Insights</h2>
+            <ul>
+                <li><a href="index.html" class="active">🏠 Overview</a></li>
+                <li><a href="diabetes_trends.html">📈 Diabetes Trends</a></li>
+                <li><a href="health_factors.html">⚕️ Health Related Factors</a></li>
+                <li><a href="health_disparities.html">📊 Health Disparities</a></li>
+            </ul>            
+        </nav>
+
+        <main class="content">
+            <header>
+                <h1>Diabetes Insights Dashboard</h1>
+            </header>
+            
+            <!-- Summary Section -->
+            <section class="summary-cards">
+                <div class="card" id="totalCasesCard">
+                    <span class="icon">🏥</span>
+                    <p id="totalCases">Total Diabetes Cases: <span class="count">0</span></p>
+                </div>
+                <div class="card" id="highestAgeGroupCard">
+                    <span class="icon">🏆</span>
+                    <p id="highestAgeGroup">Highest Affected Age Group: <span class="count">0</span></p>
+                </div>
+                <div class="card" id="topRiskFactorCard">
+                    <span class="icon">⚠️</span>
+                    <p id="topRiskFactor">Top Risk Factor: <span class="risk-text">Loading...</span></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="static/js/main.js"></script>
+</body>
+</html>
