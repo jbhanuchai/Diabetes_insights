@@ -24,7 +24,6 @@ async function fetchSummaryData() {
         const response = await fetch(`${API_BASE}/data/summary`);
         const data = await response.json();
 
-        // Update only the number inside the span
         document.getElementById("totalCasesCount").innerText = data.total_cases;
         document.getElementById("highestAgeGroup").innerText = data.highest_age_group;
 
@@ -33,25 +32,26 @@ async function fetchSummaryData() {
     }
 }
 
-
-// Show the correct filter and highlight the selected button
 function showFilter(type) {
     console.log(`Filter selected: ${type}`);
     
-    // Hide all filter groups first
     document.querySelectorAll('.filter-group').forEach(div => div.style.display = 'none');
     
-    // Show only the selected filter group
     document.getElementById(`${type}-filters`).style.display = 'flex';
     
-    // Remove active class from all filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     
-    // Add active class to the selected filter button
     document.querySelector(`button[onclick="showFilter('${type}')"]`).classList.add('active');
 }
 
-// Ensure JavaScript runs after DOM content is loaded
 document.addEventListener("DOMContentLoaded", function () {
     fetchSummaryData();
+});
+
+document.querySelectorAll("#education-filters input").forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
+        let selectedEducation = Array.from(document.querySelectorAll("#education-filters input:checked"))
+                                    .map(cb => cb.value);
+        console.log("Selected Education Levels:", selectedEducation);
+    });
 });
