@@ -3,7 +3,7 @@ import pandas as pd
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/data/*": {"origins": "*"}})
 
 # Load dataset (Make sure this path is correct)
 DATA_PATH = "../data/diabetes_cleaned.csv"
@@ -87,5 +87,46 @@ def get_cases_by_filters():
     
     return jsonify({"total_cases": int(total_cases)})
 
+@app.route("/data/age-prevalence", methods=["POST"])
+def get_age_prevalence():
+    try:
+        filters = request.json
+        filtered_df = df.copy()
+        
+        # Apply filters
+        if filters.get("age_groups"):
+            age_codes = [k for k, v in AGE_GROUPS.items() if v in filters["age_groups"]]
+            filtered_df = filtered_df[filtered_df["Age"].isin(age_codes)]
+        
+        if filters.get("genders"):
+            filtered_df = filtered_df[filtered_df["Sex"].isin([int(g) for g in filters["genders"]])]
+        
+        if filters.get("educations"):
+            edu_codes = [k for k, v in EDUCATION_LEVELS.items() if v in filters["educations"]]
+            filtered_df = filtered_df[filtered_df["Education"].isin(edu_codes)]
+        
+        # Create base dataframe with all age groups
+        all_ages = pd.DataFrame({
+            "Age": AGE_GROUPS.keys(),
+            "Age_Group": AGE_GROUPS.values()
+        })
+        
+        # Calculate prevalence percentage (0-100%)
+        result = filtered_df.groupby("Age")["Diabetes_012"].apply(
+            lambda x: round((x == 2.0).mean() * 100, 2)  # Convert to percentage
+        ).reset_index()
+        
+        # Merge with all ages to ensure completeness
+        merged = pd.merge(all_ages, result, on="Age", how="left")
+        merged["Prevalence"] = merged["Diabetes_012"].fillna(0).clip(0, 100)
+        
+        return jsonify(
+            merged[["Age_Group", "Prevalence"]]
+            .to_dict(orient="records")
+        )
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)

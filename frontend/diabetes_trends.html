@@ -62,8 +62,13 @@
                     <label><input type="checkbox" value="Post Graduate"> Post Graduate</label>
                 </div>                               
             </div>
+            <div class="scale-controls">
+                <button class="scale-btn active" id="auto-scale">Auto Scale</button>
+                <button class="scale-btn" id="fixed-scale">Fix to 100%</button>
+            </div>
             <section class="chart-container">
-                <canvas id="diabetesTrendsChart"></canvas>
+                <div id="chart-container"></div>
+                <div id="chart-error" class="error-message"></div>
             </section>
         </main>
     </div>
