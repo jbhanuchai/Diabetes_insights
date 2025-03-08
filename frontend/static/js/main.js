@@ -44,14 +44,38 @@ function showFilter(type) {
     document.querySelector(`button[onclick="showFilter('${type}')"]`).classList.add('active');
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    fetchSummaryData();
+// Fetch data for combined filters (age and gender)
+async function fetchFilteredData(ageGroups, genders) {
+    try {
+        const response = await fetch(`${API_BASE}/data/filter`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ age_groups: ageGroups, genders: genders }),
+        });
+        const data = await response.json();
+        
+        // Update the UI with the fetched data
+        document.getElementById("totalCasesCount").innerText = data.total_cases;
+    } catch (error) {
+        console.error("Error fetching filtered data:", error);
+    }
+}
+
+// Add event listeners for age and gender checkboxes
+document.querySelectorAll("#age-filters input, #sex-filters input").forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
+        let selectedAgeGroups = Array.from(document.querySelectorAll("#age-filters input:checked"))
+                                    .map(cb => cb.value);
+        let selectedGenders = Array.from(document.querySelectorAll("#sex-filters input:checked"))
+                                  .map(cb => cb.value);
+        
+        // Fetch data for combined filters
+        fetchFilteredData(selectedAgeGroups, selectedGenders);
+    });
 });
 
-document.querySelectorAll("#education-filters input").forEach(checkbox => {
-    checkbox.addEventListener("change", function () {
-        let selectedEducation = Array.from(document.querySelectorAll("#education-filters input:checked"))
-                                    .map(cb => cb.value);
-        console.log("Selected Education Levels:", selectedEducation);
-    });
+document.addEventListener("DOMContentLoaded", function () {
+    fetchSummaryData();
 });
