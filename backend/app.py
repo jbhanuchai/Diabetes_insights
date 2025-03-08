@@ -31,14 +31,12 @@ AGE_GROUPS = {
 }
 
 EDUCATION_LEVELS = {
-    1: "No Formal Education",
-    2: "Elementary (Grades 1-8)",
-    3: "Some High School (Grades 9-11)",
-    4: "High School Graduate",
-    5: "Some College, No Degree",
-    6: "Associate Degree",
-    7: "Bachelor's Degree",
-    8: "Graduate Degree (Master's/PhD)"
+    1: "No Education",
+    2: "Elementary School",
+    3: "High School",
+    4: "College",
+    5: "Under Graduate",
+    6: "Post Graduate"
 }
 
 @app.route("/data/summary")
@@ -55,28 +53,32 @@ def get_summary():
     }
     return jsonify(summary)
 
+
+# Update the /data/filter endpoint
 @app.route("/data/filter", methods=["POST"])
 def get_cases_by_filters():
     data = request.json
     age_groups = data.get("age_groups", [])
     genders = data.get("genders", [])
+    educations = data.get("educations", [])  # New education filter
     
-    # Start with the full dataset
     filtered_df = df
     
-    # Apply age filter if age groups are selected
+    # Age filter
     if age_groups:
-        age_group_nums = [next((key for key, value in AGE_GROUPS.items() if value == age_group), None) for age_group in age_groups]
-        age_group_nums = [num for num in age_group_nums if num is not None]  # Remove None values
+        age_group_nums = [key for key, value in AGE_GROUPS.items() if value in age_groups]
         filtered_df = filtered_df[filtered_df["Age"].isin(age_group_nums)]
     
-    # Apply gender filter if genders are selected
+    # Gender filter
     if genders:
-        # Convert gender values from string to integer
         gender_nums = [int(gender) for gender in genders]
         filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
     
-    # Calculate total cases
+    # Education filter (new)
+    if educations:
+        education_nums = [key for key, value in EDUCATION_LEVELS.items() if value in educations]
+        filtered_df = filtered_df[filtered_df["Education"].isin(education_nums)]
+    
     total_cases = filtered_df["Diabetes_012"].count()
     
     return jsonify({"total_cases": int(total_cases)})

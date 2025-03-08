@@ -26,3 +26,9 @@ num_females = (df["Sex"] == 0).sum()
 # Print results
 print(f"Number of Males: {num_males}")
 print(f"Number of Females: {num_females}")
+
+education_counts = df["Education"].value_counts()
+
+# Print education level counts
+print("Education Level Counts:")
+print(education_counts)
