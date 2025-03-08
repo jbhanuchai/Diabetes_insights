@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import pandas as pd
 from flask_cors import CORS
 
@@ -41,7 +41,6 @@ EDUCATION_LEVELS = {
     8: "Graduate Degree (Master's/PhD)"
 }
 
-
 @app.route("/data/summary")
 def get_summary():
     total_cases = df["Diabetes_012"].count()
@@ -55,5 +54,32 @@ def get_summary():
         "top_risk_factor": top_risk_factor
     }
     return jsonify(summary)
+
+@app.route("/data/filter", methods=["POST"])
+def get_cases_by_filters():
+    data = request.json
+    age_groups = data.get("age_groups", [])
+    genders = data.get("genders", [])
+    
+    # Start with the full dataset
+    filtered_df = df
+    
+    # Apply age filter if age groups are selected
+    if age_groups:
+        age_group_nums = [next((key for key, value in AGE_GROUPS.items() if value == age_group), None) for age_group in age_groups]
+        age_group_nums = [num for num in age_group_nums if num is not None]  # Remove None values
+        filtered_df = filtered_df[filtered_df["Age"].isin(age_group_nums)]
+    
+    # Apply gender filter if genders are selected
+    if genders:
+        # Convert gender values from string to integer
+        gender_nums = [int(gender) for gender in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+    
+    # Calculate total cases
+    total_cases = filtered_df["Diabetes_012"].count()
+    
+    return jsonify({"total_cases": int(total_cases)})
+
 if __name__ == "__main__":
     app.run(debug=True)
