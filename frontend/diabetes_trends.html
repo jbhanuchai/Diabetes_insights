@@ -25,6 +25,43 @@
             <header>
                 <h1>Diabetes Trends</h1>
             </header>
+            <!-- Filter Buttons -->
+            <div class="filters">
+                <button class="filter-btn age" onclick="showFilter('age')">Age</button>
+                <button class="filter-btn gender" onclick="showFilter('sex')">Gender</button>
+                <button class="filter-btn education" onclick="showFilter('education')">Education</button>
+            </div>            
+
+            <!-- Filter Options -->
+            <div id="filter-options">
+                <div id="age-filters" class="filter-group">
+                    <label><input type="checkbox" value="18-24"> 18-24</label>
+                    <label><input type="checkbox" value="25-29"> 25-29</label>
+                    <label><input type="checkbox" value="30-34"> 30-34</label>
+                    <label><input type="checkbox" value="35-39"> 35-39</label>
+                    <label><input type="checkbox" value="40-44"> 40-44</label>
+                    <label><input type="checkbox" value="45-49"> 45-49</label>
+                    <label><input type="checkbox" value="50-54"> 50-54</label>
+                    <label><input type="checkbox" value="55-59"> 55-59</label>
+                    <label><input type="checkbox" value="60-64"> 60-64</label>
+                    <label><input type="checkbox" value="65-69"> 65-69</label>
+                    <label><input type="checkbox" value="70-74"> 70-74</label>
+                    <label><input type="checkbox" value="75-79"> 75-79</label>
+                    <label><input type="checkbox" value="80+"> 80+</label>
+                </div>                
+                <div id="sex-filters" class="filter-group">
+                    <label><input type="checkbox" value="1"> Male</label>
+                    <label><input type="checkbox" value="0"> Female</label>
+                </div>
+                <div id="education-filters" class="filter-group">
+                    <label><input type="checkbox" value="No Education"> No Education</label>
+                    <label><input type="checkbox" value="Elementary School"> Elementary School</label>
+                    <label><input type="checkbox" value="High School"> High School</label>
+                    <label><input type="checkbox" value="College"> College</label>
+                    <label><input type="checkbox" value="Under Graduate"> Under Graduate</label>
+                    <label><input type="checkbox" value="Post Graduate"> Post Graduate</label>
+                </div>                               
+            </div>
             <section class="chart-container">
                 <canvas id="diabetesTrendsChart"></canvas>
             </section>
