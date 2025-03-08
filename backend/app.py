@@ -53,6 +53,10 @@ def get_summary():
     }
     return jsonify(summary)
 
+@app.route("/data/sample")
+def get_sample_data():
+    sample_data = df[["Age", "BMI"]].head(10).to_dict(orient="records")
+    return jsonify(sample_data)
 
 # Update the /data/filter endpoint
 @app.route("/data/filter", methods=["POST"])

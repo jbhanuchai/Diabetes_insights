@@ -1,9 +1,13 @@
 async function fetchChartData() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/data/sample");
+        const response = await fetch("http://127.0.0.1:5000/data/sample"); // Use the correct API
         const data = await response.json();
-
         console.log("Fetched Data:", data);
+        
+        if (!Array.isArray(data)) {
+            throw new Error("Expected an array but received an object");
+        }
+        
         renderChart(data);
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -11,6 +15,11 @@ async function fetchChartData() {
 }
 
 function renderChart(data) {
+    if (!Array.isArray(data)) {
+        console.error("renderChart expected an array, received:", data);
+        return;
+    }
+
     const width = 600, height = 300;
     
     const svg = d3.select("#chart-container")

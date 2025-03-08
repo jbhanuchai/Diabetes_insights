@@ -21,11 +21,18 @@ function animateCounter(elementId, targetNumber) {
 async function fetchSummaryData() {
     try {
         console.log("Fetching summary data...");
-        const response = await fetch(`${API_BASE}/data/summary`);
+        const response = await fetch("http://127.0.0.1:5000/data/summary");
         const data = await response.json();
 
-        document.getElementById("totalCasesCount").innerText = data.total_cases;
-        document.getElementById("highestAgeGroup").innerText = data.highest_age_group;
+        const totalCasesElement = document.getElementById("totalCasesCount");
+        if (totalCasesElement) {
+            totalCasesElement.innerText = data.total_cases;
+        }
+
+        const highestAgeGroupElement = document.getElementById("highestAgeGroup");
+        if (highestAgeGroupElement) {
+            highestAgeGroupElement.innerText = data.highest_age_group;
+        }
 
     } catch (error) {
         console.error("Error fetching summary data:", error);
@@ -58,8 +65,15 @@ async function fetchFilteredData(ageGroups, genders, educations) {
                 educations: educations 
             }),
         });
+
         const data = await response.json();
-        document.getElementById("totalCasesCount").innerText = data.total_cases;
+
+        // Only update total cases if the element exists (to avoid errors)
+        const totalCasesElement = document.getElementById("totalCasesCount");
+        if (totalCasesElement) {
+            totalCasesElement.innerText = data.total_cases;
+        }
+
     } catch (error) {
         console.error("Error fetching filtered data:", error);
     }
