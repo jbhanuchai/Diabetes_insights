@@ -3,7 +3,7 @@ import pandas as pd
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/data/*": {"origins": "*"}})
 
 # Load dataset (Make sure this path is correct)
 DATA_PATH = "../data/diabetes_cleaned.csv"
@@ -41,14 +41,23 @@ EDUCATION_LEVELS = {
 
 @app.route("/data/summary")
 def get_summary():
+    # Filter only diabetic cases (Diabetes_012 == 2.0)
+    diabetic_df = df[df["Diabetes_012"] == 2.0]
+    
+    # Calculate highest age group based on diabetic cases (not total samples)
+    if not diabetic_df.empty:
+        highest_age_group_num = diabetic_df["Age"].value_counts().idxmax()
+    else:
+        highest_age_group_num = df["Age"].value_counts().idxmax()
+    
+    highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")
+    
     total_cases = df["Diabetes_012"].count()
-    highest_age_group_num = df["Age"].value_counts().idxmax()  # Most common age group (1-13)
-    highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")  # Convert to readable format
     top_risk_factor = df.drop(columns=["Diabetes_012"]).corrwith(df["Diabetes_012"]).abs().idxmax()
 
     summary = {
         "total_cases": int(total_cases),
-        "highest_age_group": highest_age_group,  # Now returns "55-59" instead of 8
+        "highest_age_group": highest_age_group,
         "top_risk_factor": top_risk_factor
     }
     return jsonify(summary)
@@ -87,5 +96,49 @@ def get_cases_by_filters():
     
     return jsonify({"total_cases": int(total_cases)})
 
+@app.route("/data/age-prevalence", methods=["POST"])
+def get_age_prevalence():
+    try:
+        filters = request.json
+        filtered_df = df.copy()
+        
+        # Apply filters (existing code)
+        if filters.get("age_groups"):
+            age_codes = [k for k, v in AGE_GROUPS.items() if v in filters["age_groups"]]
+            filtered_df = filtered_df[filtered_df["Age"].isin(age_codes)]
+        
+        if filters.get("genders"):
+            filtered_df = filtered_df[filtered_df["Sex"].isin([int(g) for g in filters["genders"]])]
+        
+        if filters.get("educations"):
+            edu_codes = [k for k, v in EDUCATION_LEVELS.items() if v in filters["educations"]]
+            filtered_df = filtered_df[filtered_df["Education"].isin(edu_codes)]
+        
+        # Create base dataframe with all age groups
+        all_ages = pd.DataFrame({
+            "Age": AGE_GROUPS.keys(),
+            "Age_Group": AGE_GROUPS.values()
+        })
+        
+        # Calculate prevalence with counts
+        result = filtered_df.groupby("Age").agg(
+            total_cases=('Diabetes_012', 'count'),
+            diabetes_cases=('Diabetes_012', lambda x: (x == 2.0).sum()),
+            prevalence=('Diabetes_012', lambda x: round((x == 2.0).mean() * 100, 2))
+        ).reset_index()
+        
+        # Merge with all ages
+        merged = pd.merge(all_ages, result, on="Age", how="left")
+        merged.fillna({'total_cases': 0, 'diabetes_cases': 0, 'prevalence': 0}, inplace=True)
+        
+        return jsonify(
+            merged[["Age_Group", "prevalence", "total_cases", "diabetes_cases"]]
+            .rename(columns={"prevalence": "Prevalence"})
+            .to_dict(orient="records")
+        )
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)
