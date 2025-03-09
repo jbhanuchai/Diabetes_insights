@@ -41,14 +41,23 @@ EDUCATION_LEVELS = {
 
 @app.route("/data/summary")
 def get_summary():
+    # Filter only diabetic cases (Diabetes_012 == 2.0)
+    diabetic_df = df[df["Diabetes_012"] == 2.0]
+    
+    # Calculate highest age group based on diabetic cases (not total samples)
+    if not diabetic_df.empty:
+        highest_age_group_num = diabetic_df["Age"].value_counts().idxmax()
+    else:
+        highest_age_group_num = df["Age"].value_counts().idxmax()
+    
+    highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")
+    
     total_cases = df["Diabetes_012"].count()
-    highest_age_group_num = df["Age"].value_counts().idxmax()  # Most common age group (1-13)
-    highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")  # Convert to readable format
     top_risk_factor = df.drop(columns=["Diabetes_012"]).corrwith(df["Diabetes_012"]).abs().idxmax()
 
     summary = {
         "total_cases": int(total_cases),
-        "highest_age_group": highest_age_group,  # Now returns "55-59" instead of 8
+        "highest_age_group": highest_age_group,
         "top_risk_factor": top_risk_factor
     }
     return jsonify(summary)
@@ -93,7 +102,7 @@ def get_age_prevalence():
         filters = request.json
         filtered_df = df.copy()
         
-        # Apply filters
+        # Apply filters (existing code)
         if filters.get("age_groups"):
             age_codes = [k for k, v in AGE_GROUPS.items() if v in filters["age_groups"]]
             filtered_df = filtered_df[filtered_df["Age"].isin(age_codes)]
@@ -111,17 +120,20 @@ def get_age_prevalence():
             "Age_Group": AGE_GROUPS.values()
         })
         
-        # Calculate prevalence percentage (0-100%)
-        result = filtered_df.groupby("Age")["Diabetes_012"].apply(
-            lambda x: round((x == 2.0).mean() * 100, 2)  # Convert to percentage
+        # Calculate prevalence with counts
+        result = filtered_df.groupby("Age").agg(
+            total_cases=('Diabetes_012', 'count'),
+            diabetes_cases=('Diabetes_012', lambda x: (x == 2.0).sum()),
+            prevalence=('Diabetes_012', lambda x: round((x == 2.0).mean() * 100, 2))
         ).reset_index()
         
-        # Merge with all ages to ensure completeness
+        # Merge with all ages
         merged = pd.merge(all_ages, result, on="Age", how="left")
-        merged["Prevalence"] = merged["Diabetes_012"].fillna(0).clip(0, 100)
+        merged.fillna({'total_cases': 0, 'diabetes_cases': 0, 'prevalence': 0}, inplace=True)
         
         return jsonify(
-            merged[["Age_Group", "Prevalence"]]
+            merged[["Age_Group", "prevalence", "total_cases", "diabetes_cases"]]
+            .rename(columns={"prevalence": "Prevalence"})
             .to_dict(orient="records")
         )
         

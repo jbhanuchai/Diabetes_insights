@@ -1,19 +1,14 @@
-let currentScale = 'auto'; 
+let currentScale = 'auto';
+
 async function fetchChartData() {
     try {
-        // Clear previous elements
         d3.select("#chart-container").html("");
         document.getElementById("chart-error").style.display = "none";
 
-        // Get active filters
-        const selectedAges = Array.from(document.querySelectorAll('#age-filters input:checked'))
-                                .map(cb => cb.value);
-        const selectedGenders = Array.from(document.querySelectorAll('#sex-filters input:checked'))
-                                  .map(cb => cb.value);
-        const selectedEducations = Array.from(document.querySelectorAll('#education-filters input:checked'))
-                                    .map(cb => cb.value);
+        const selectedAges = Array.from(document.querySelectorAll('#age-filters input:checked')).map(cb => cb.value);
+        const selectedGenders = Array.from(document.querySelectorAll('#sex-filters input:checked')).map(cb => cb.value);
+        const selectedEducations = Array.from(document.querySelectorAll('#education-filters input:checked')).map(cb => cb.value);
 
-        // Fetch data
         const response = await fetch("http://127.0.0.1:5000/data/age-prevalence", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -28,12 +23,12 @@ async function fetchChartData() {
         
         const rawData = await response.json();
         
-        // Validate and format data
         const validatedData = rawData.map(item => ({
             Age_Group: item.Age_Group,
-            Prevalence: Math.min(Math.max(Number(item.Prevalence) || 0, 0), 100) // Clamp to 0-100%
+            Prevalence: item.Prevalence,
+            Total: item.total_cases,
+            Diabetic: item.diabetes_cases
         })).sort((a, b) => {
-            // Sort by numeric age value
             const ageA = parseInt(a.Age_Group.split('-')[0]);
             const ageB = parseInt(b.Age_Group.split('-')[0]);
             return ageA - ageB;
@@ -58,37 +53,33 @@ function renderChart(data) {
         return;
     }
 
-    // Chart dimensions
     const width = 800, height = 400;
     const margin = { top: 30, right: 30, bottom: 60, left: 60 };
+    const tooltip = d3.select("#tooltip");
 
-    // Create SVG
+    // Create SVG first
     const svg = container.append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    // X-axis scale
+    // Create scales
     const xScale = d3.scaleBand()
         .domain(data.map(d => d.Age_Group))
         .range([margin.left, width - margin.right])
         .padding(0.2);
 
-    // Y-axis scale configuration
-    
     const yMax = currentScale === 'fixed' ? 100 : d3.max(data, d => d.Prevalence) || 100;
-    // Y-axis scale (0-100%)
     const yScale = d3.scaleLinear()
         .domain([0, yMax])
         .range([height - margin.bottom, margin.top])
         .nice();
 
-    // Line generator
+    // Draw line
     const line = d3.line()
         .x(d => xScale(d.Age_Group) + xScale.bandwidth() / 2)
         .y(d => yScale(d.Prevalence))
         .curve(d3.curveMonotoneX);
 
-    // Draw line
     svg.append("path")
         .datum(data)
         .attr("class", "chart-line")
@@ -96,6 +87,31 @@ function renderChart(data) {
         .attr("fill", "none")
         .attr("stroke", "#e43f5a")
         .attr("stroke-width", 3);
+
+    // Add data points
+    svg.selectAll(".data-point")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "data-point")
+        .attr("cx", d => xScale(d.Age_Group) + xScale.bandwidth() / 2)
+        .attr("cy", d => yScale(d.Prevalence))
+        .attr("r", 4)
+        .attr("fill", "#e43f5a")
+        .on("mouseover", (event, d) => {
+            tooltip
+                .html(`
+                    <strong>Age Group: ${d.Age_Group}</strong><br>
+                    Prevalence: ${d.Prevalence}%<br>
+                    Diabetic Cases: ${d.Diabetic}<br>
+                `)
+                .style("opacity", 1)
+                .style("left", `${event.pageX + 10}px`)
+                .style("top", `${event.pageY - 30}px`);
+        })
+        .on("mouseout", () => {
+            tooltip.style("opacity", 0);
+        });
 
     // Add axes
     svg.append("g")
@@ -109,7 +125,7 @@ function renderChart(data) {
 
     svg.append("g")
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(d3.axisLeft(yScale).ticks(10).tickFormat(d => `${d}%`)); // Show 10 ticks (0-100%)
+        .call(d3.axisLeft(yScale).ticks(10).tickFormat(d => `${d}%`));
 
     // Add labels
     svg.append("text")
@@ -123,10 +139,10 @@ function renderChart(data) {
         .attr("transform", "rotate(-90)")
         .attr("y", 10)
         .attr("x", -height / 2)
-        .text("Diabetes Prevalence (%)");
+        .text("Prevalence (%)");
 }
 
-// Replace the scale toggle handlers section with:
+// Scale toggle handlers
 document.getElementById('auto-scale').addEventListener('click', function() {
     currentScale = 'auto';
     document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('active'));
