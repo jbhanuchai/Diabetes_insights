@@ -1,35 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Disparities</title>
-    <link rel="stylesheet" href="static/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Disparities</title>
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <nav class="sidebar">
-            <h2>Diabetes Insights</h2>
-            <ul>
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
-                <li><a href="health_factors.html">Health Related Factors</a></li>
-                <li><a href="health_disparities.html" class="active">Health Disparities</a></li>
-            </ul>            
-        </nav>
+<div class="container">
+  <nav class="sidebar">
+    <h2>Diabetes Insights</h2>
+    <ul>
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
+      <li><a href="health_factors.html">Health Related Factors</a></li>
+      <li><a href="health_disparities.html" class="active">Health Disparities</a></li>
+    </ul>
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+  </nav>
+  <main class="content">
+    <header>
+      <h1>Health Disparities</h1>
+    </header>
+    <section class="chart-container">
+        <div class="toggle-controls" style="margin-top: 10px;">
+            <label for="gender-filter" style="margin-right: 8px;">Filter by Gender:</label>
+            <select id="gender-filter">
+              <option value="All">All</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          
+            <label id="scaleLabel" style="margin-left: 20px; font-weight: 600;">Percentage</label>
+            <label class="switch" style="margin-left: 8px;">
+              <input type="checkbox" id="toggleScaleSwitch" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+          
+      <div id="chart-education-gender" class="chart-box">
+        <h2>Diabetes Rate by Education & Gender</h2>
+      </div>
+      <div id="slopeGraph"></div>
+    </section>
+  </main>
+</div>
 
-        <main class="content">
-            <header>
-                <h1>Health Disparities</h1>
-            </header>
-
-            <section class="chart-container">
-                <canvas id="healthDisparitiesChart"></canvas>
-            </section>
-        </main>
-    </div>
-
-    <script src="static/js/main.js"></script>
-    <script src="static/js/visualization.js"></script>
+<script src="static/js/main.js"></script>
+<script src="static/js/visualization.js"></script>
 </body>
 </html>
