@@ -123,5 +123,45 @@ def education_gender_diabetes():
 
     return jsonify(results)
 
+@app.route("/data/income_diabetes")
+def income_diabetes():
+    gender_filter = request.args.get("gender", "All")
+
+    diabetes_labels = {
+        0: "No Diabetes",
+        1: "Pre-Diabetes",
+        2: "Diabetes"
+    }
+
+    gender_map = {
+        1: "Male",
+        0: "Female"
+    }
+
+    df_filtered = df.copy()
+    if gender_filter in gender_map.values():
+        gender_code = [k for k, v in gender_map.items() if v == gender_filter][0]
+        df_filtered = df_filtered[df_filtered["Sex"] == gender_code]
+
+    grouped = df_filtered.groupby(["Income", "Diabetes_012"]).size().reset_index(name="count")
+
+    total_per_income = grouped.groupby("Income")["count"].sum().to_dict()
+
+    results = []
+    for _, row in grouped.iterrows():
+        income = str(row["Income"])
+        diabetes = diabetes_labels.get(int(row["Diabetes_012"]), "Unknown")
+        count = int(row["count"])
+        total = total_per_income.get(row["Income"], 1)
+        percent = round((count / total) * 100, 2)
+        results.append({
+            "income": income,
+            "diabetes": diabetes,
+            "count": count,
+            "percent": percent
+        })
+
+    return jsonify(results)
+
 if __name__ == "__main__":
     app.run(debug=True)

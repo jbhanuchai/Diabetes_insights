@@ -19,30 +19,53 @@
     </ul>
     <button id="darkModeToggle">Toggle Dark Mode</button>
   </nav>
+
   <main class="content">
     <header>
       <h1>Health Disparities</h1>
     </header>
-    <section class="chart-container">
-        <div class="toggle-controls" style="margin-top: 10px;">
-            <label for="gender-filter" style="margin-right: 8px;">Filter by Gender:</label>
-            <select id="gender-filter">
-              <option value="All">All</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          
-            <label id="scaleLabel" style="margin-left: 20px; font-weight: 600;">Percentage</label>
-            <label class="switch" style="margin-left: 8px;">
-              <input type="checkbox" id="toggleScaleSwitch" checked>
-              <span class="slider round"></span>
-            </label>
-          </div>
-          
-      <div id="chart-education-gender" class="chart-box">
-        <h2>Diabetes Rate by Education & Gender</h2>
+
+    <!-- Top Filters (Shared) -->
+    <div class="dashboard-filters">
+      <label for="gender-filter">Gender:</label>
+      <select id="gender-filter">
+        <option value="All">All</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    
+      <div class="toggle-wrapper">
+        <label class="modern-toggle">
+          <input type="checkbox" id="toggleScaleSwitch" checked>
+          <span class="slider"></span>
+        </label>
+        <span id="scaleLabel">Percentage</span>        
       </div>
-      <div id="slopeGraph"></div>
+    
+      <button id="resetFilters" class="reset-button">Reset Filters</button>
+    </div>    
+
+    <!-- Grid for Visualizations -->
+    <section class="chart-grid">
+      <div class="chart-card">
+        <h3>Stacked Bar Chart – Gender × Education vs Diabetes</h3>
+        <div id="chart-education-gender"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Grouped Bar Chart – Diabetes by Income</h3>
+        <div id="grouped-bar-income"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Pie Chart – Gender Split in Diabetic Population</h3>
+        <div id="pie-gender"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Bar Chart – Mobility Difficulty by Diabetes Status</h3>
+        <div id="mobility-bar"></div>
+      </div>
     </section>
   </main>
 </div>
