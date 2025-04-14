@@ -1,6 +1,30 @@
+function getLegendTextColor() {
+  return document.body.classList.contains("dark-mode") ? "#fff" : "#000";
+}
+
+// Constants for color mappings
+const genderColors = {
+  "Male": "#1f77b4",       // Blue
+  "Female": "#9467bd"     // Purple
+};
+
+const diabetesColors = {
+  "No Diabetes": "#66c2a5",     // Green
+  "Pre-Diabetes": "#fc8d62",   // Orange
+  "Diabetes": "#e41a1c"        // Red
+};
+
+function getGenderColor(gender) {
+  return genderColors[gender] || "#999";
+}
+
+function getDiabetesColor(type) {
+  return diabetesColors[type] || "#999";
+}
+
 async function fetchChartData() {
     try {
-        const response = await fetch(`${API_BASE}/data/sample`); // Use the correct API
+        const response = await fetch(`${API_BASE}/data/sample`);
         
         const data = await response.json();
         console.log("Fetched Data:", data);
@@ -106,7 +130,7 @@ async function renderGenderEducationStackedBar() {
   const yMax = showPercentage ? 100 : d3.max(transformed, d => d.Male + d.Female);
   const y = d3.scaleLinear().domain([0, yMax]).nice().range([height, 0]);
 
-  const color = d3.scaleOrdinal().domain(genders).range(["#377eb8", "#e41a1c"]);
+  const color = d3.scaleOrdinal().domain(genders).range(genders.map(getGenderColor));
   const stack = d3.stack().keys(genders);
   const series = stack(transformed);
 
@@ -197,23 +221,23 @@ async function renderGenderEducationStackedBar() {
       .text(g);
   });
   // Y Axis Label
-svg.append("text")
-.attr("class", "y-axis-label")
-.attr("text-anchor", "middle")
-.attr("transform", `rotate(-90)`)
-.attr("x", -height / 2)
-.attr("y", -50)
-.style("font-weight", "bold")
-.text(showPercentage ? "Diabetes Rate (%)" : "Diabetes Count");
+  svg.append("text")
+  .attr("class", "y-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("transform", `rotate(-90)`)
+  .attr("x", -height / 2)
+  .attr("y", -50)
+  .style("font-weight", "bold")
+  .text(showPercentage ? "Diabetes Rate (%)" : "Diabetes Count");
 
-// X Axis Label
-svg.append("text")
-.attr("class", "x-axis-label")
-.attr("text-anchor", "middle")
-.attr("x", width / 2)
-.attr("y", height + 80)
-.style("font-weight", "bold")
-.text("Education Level");
+  // X Axis Label
+  svg.append("text")
+  .attr("class", "x-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("x", width / 2)
+  .attr("y", height + 80)
+  .style("font-weight", "bold")
+  .text("Education Level");
 
 }
 
@@ -221,11 +245,13 @@ svg.append("text")
 document.addEventListener("DOMContentLoaded", () => {
   renderGenderEducationStackedBar();
   renderIncomeGroupedBar();
+  renderGenderPieChart();
 
   document.getElementById("gender-filter").addEventListener("change", e => {
     selectedGender = e.target.value;
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
+    renderGenderPieChart();
   });
 
   document.getElementById("toggleScaleSwitch").addEventListener("change", (e) => {
@@ -233,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("scaleLabel").textContent = showPercentage ? "Percentage" : "Count";
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
+    renderGenderPieChart();
   });
 
   document.getElementById("resetFilters").addEventListener("click", () => {
@@ -243,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("scaleLabel").textContent = "Percentage";
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
+    renderGenderPieChart();
   });
 
   document.getElementById("darkModeToggle").addEventListener("click", () => {
@@ -296,7 +324,7 @@ async function renderIncomeGroupedBar() {
   const yMax = d3.max(transformed, d => d3.max(diabetesTypes, k => d[k]));
   const y = d3.scaleLinear().domain([0, yMax]).nice().range([height, 0]);
 
-  const color = d3.scaleOrdinal().domain(diabetesTypes).range(["#66c2a5", "#fc8d62", "#8da0cb"]);
+  const color = d3.scaleOrdinal().domain(diabetesTypes).range(diabetesTypes.map(getDiabetesColor));
 
   // Smoothed Y Axis Transition
   const yAxis = svg.selectAll(".y-axis")
@@ -359,23 +387,131 @@ async function renderIncomeGroupedBar() {
       .attr("x", i * 140 + 22).attr("y", 13)
       .text(type);
   });
+  
   // Y Axis Label
-svg.append("text")
-.attr("class", "y-axis-label")
-.attr("text-anchor", "middle")
-.attr("transform", `rotate(-90)`)
-.attr("x", -height / 2)
-.attr("y", -50)
-.style("font-weight", "bold")
-.text(showPercentage ? "Diabetes Rate (%)" : "Diabetes Count");
+  svg.append("text")
+  .attr("class", "y-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("transform", `rotate(-90)`)
+  .attr("x", -height / 2)
+  .attr("y", -50)
+  .style("font-weight", "bold")
+  .text(showPercentage ? "Diabetes Rate (%)" : "Diabetes Count");
 
-// X Axis Label
-svg.append("text")
-.attr("class", "x-axis-label")
-.attr("text-anchor", "middle")
-.attr("x", width / 2)
-.attr("y", height + 80)
-.style("font-weight", "bold")
-.text("Income Group");
+  // X Axis Label
+  svg.append("text")
+  .attr("class", "x-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("x", width / 2)
+  .attr("y", height + 80)
+  .style("font-weight", "bold")
+  .text("Income Group");
 
+}
+
+async function renderGenderPieChart() {
+  const data = await fetch(`${API_BASE}/data/gender_split_diabetic`).then(res => res.json());
+
+  d3.select("#pie-gender").html(""); // Clear previous chart
+  const width = 400, height = 400, radius = Math.min(width, height) / 2;
+
+  const svg = d3.select("#pie-gender")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height + 80)
+    .append("g")
+    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  const color = d3.scaleOrdinal().domain(data.map(d => d.gender)).range(data.map(d => getGenderColor(d.gender)));
+
+  const pie = d3.pie().value(d => d.count).sort(null);
+  const arc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius - 10);
+  const hoverArc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius + 5);
+
+  const paths = svg.selectAll("path")
+    .data(pie(data))
+    .enter()
+    .append("path")
+    .attr("fill", d => color(d.data.gender))
+    .attr("stroke", "white")
+    .style("stroke-width", "2px")
+    .attr("d", d => {
+      const start = { startAngle: 0, endAngle: 0 };
+      return arc(start);
+    })
+    .transition()
+    .duration(1000)
+    .attrTween("d", function(d) {
+      const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+      return t => arc(i(t));
+    });
+
+  // Re-select after transition for interactivity
+  svg.selectAll("path")
+    .data(pie(data))
+    .on("mouseover", function(event, d) {
+      d3.select(this).transition().duration(200).attr("d", hoverArc(d));
+      tooltip.transition().duration(150).style("opacity", 1);
+      tooltip.html(`
+        <strong>Gender:</strong> ${d.data.gender}<br/>
+        <strong>Count:</strong> ${d.data.count}<br/>
+        <strong>Percent:</strong> ${d.data.percent}%
+      `);
+    })
+    .on("mousemove", (event) => {
+      tooltip
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 40}px`);
+    })
+    .on("mouseout", function(event, d) {
+      d3.select(this).transition().duration(200).attr("d", arc(d));
+      tooltip.transition().duration(200).style("opacity", 0);
+    })
+    .on("click", (event, d) => {
+      selectedGender = d.data.gender;
+      document.getElementById("gender-filter").value = selectedGender;
+      renderGenderEducationStackedBar();
+      renderIncomeGroupedBar();
+      renderGenderPieChart(); // re-render for sync
+    });
+
+  // Add Percentage Labels inside slices
+  svg.selectAll("text.label")
+    .data(pie(data))
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .text(d => `${d.data.percent}%`)
+    .attr("transform", d => `translate(${arc.centroid(d)})`)
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("font-weight", "bold")
+    .style("fill", d => document.body.classList.contains("dark-mode") ? "#fff" : "#000");
+
+  // Legend with filtering
+  const legend = svg.append("g").attr("transform", `translate(${-radius}, ${radius + 30})`);
+
+  data.forEach((d, i) => {
+    const g = legend.append("g")
+      .attr("transform", `translate(0, ${i * 22})`)
+      .style("cursor", "pointer")
+      .on("click", () => {
+        selectedGender = d.gender;
+        document.getElementById("gender-filter").value = selectedGender;
+        renderGenderEducationStackedBar();
+        renderIncomeGroupedBar();
+        renderGenderPieChart(); // re-render for sync
+      });
+
+    g.append("rect")
+      .attr("width", 16)
+      .attr("height", 16)
+      .attr("fill", color(d.gender));
+
+    g.append("text")
+      .attr("x", 22)
+      .attr("y", 13)
+      .text(`${d.gender}`)
+      .style("fill", document.body.classList.contains("dark-mode") ? "#fff" : "#000");
+  });
 }

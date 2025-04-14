@@ -163,5 +163,26 @@ def income_diabetes():
 
     return jsonify(results)
 
+@app.route("/data/gender_split_diabetic")
+def gender_split_diabetic():
+    diabetic_df = df[df["Diabetes_012"] == 2]
+
+    gender_counts = diabetic_df["Sex"].value_counts().to_dict()
+    total = sum(gender_counts.values())
+
+    # Map 1 → Male, 0 → Female
+    gender_map = {1: "Male", 0: "Female"}
+    result = []
+    for gender_code, count in gender_counts.items():
+        label = gender_map.get(gender_code, "Unknown")
+        percent = round((count / total) * 100, 2)
+        result.append({
+            "gender": label,
+            "count": count,
+            "percent": percent
+        })
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)
