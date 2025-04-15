@@ -246,6 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
   renderGenderEducationStackedBar();
   renderIncomeGroupedBar();
   renderGenderPieChart();
+  renderMobilityByDiabetesBar();
+
+  document.getElementById("mobility-filter").addEventListener("change", () => {
+    renderMobilityByDiabetesBar();
+  });
 
   document.getElementById("gender-filter").addEventListener("change", e => {
     selectedGender = e.target.value;
@@ -260,6 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
     renderGenderPieChart();
+    renderMobilityByDiabetesBar();
   });
 
   document.getElementById("resetFilters").addEventListener("click", () => {
@@ -271,6 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
     renderGenderPieChart();
+    renderMobilityByDiabetesBar();
   });
 
   document.getElementById("darkModeToggle").addEventListener("click", () => {
@@ -514,4 +521,119 @@ async function renderGenderPieChart() {
       .text(`${d.gender}`)
       .style("fill", document.body.classList.contains("dark-mode") ? "#fff" : "#000");
   });
+}
+
+async function renderMobilityByDiabetesBar() {
+  const filter = document.getElementById("mobility-filter").value;
+  const data = await fetch(`${API_BASE}/data/mobility_by_diabetes?filter=${filter}`).then(res => res.json());
+
+  const diabetesLabels = {
+    0: "No Diabetes",
+    1: "Pre-Diabetes",
+    2: "Diabetes"
+  };
+
+  const groups = Array.from(new Set(data.map(d => d.group))).sort();
+  const transformed = groups.map(g => {
+    const result = { group: g };
+    data.filter(d => d.group === g).forEach(d => {
+      result[diabetesLabels[d.diabetes]] = showPercentage? d.percent: d.count;
+
+    });
+    return result;
+  });
+
+  const margin = { top: 40, right: 30, bottom: 100, left: 70 },
+        width = 800 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+  d3.select("#mobility-bar").html("");
+
+  const svg = d3.select("#mobility-bar")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom + 60)
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+  const x0 = d3.scaleBand().domain(groups).range([0, width]).padding(0.2);
+  const diabetesTypes = ["No Diabetes", "Pre-Diabetes", "Diabetes"];
+  const x1 = d3.scaleBand().domain(diabetesTypes).range([0, x0.bandwidth()]).padding(0.05);
+  const yMax = showPercentage? 100: d3.max(transformed, d => d3.max(diabetesTypes, type => d[type]));
+  const y = d3.scaleLinear().domain([0, yMax]).nice().range([height, 0]);
+
+
+  const color = d3.scaleOrdinal().domain(diabetesTypes).range(diabetesTypes.map(getDiabetesColor));
+  svg.selectAll(".y-axis").remove();
+  svg.append("g")
+  .attr("class", "y-axis")
+  .transition()
+  .duration(1000)
+  .call(d3.axisLeft(y));
+
+  // X Axis with transition
+  const xAxis = svg.selectAll(".x-axis")
+    .data([null])
+    .join("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0,${height})`);
+  xAxis.transition().duration(1000).call(d3.axisBottom(x0));
+  xAxis.selectAll("text")
+    .attr("transform", "rotate(-35)")
+    .style("text-anchor", "end");
+
+  // Y Axis with transition
+  const yAxis = svg.selectAll(".y-axis")
+    .data([null])
+    .join("g")
+    .attr("class", "y-axis");
+  yAxis.transition().duration(1000).call(d3.axisLeft(y));
+
+  const group = svg.selectAll("g.mobility-group")
+    .data(transformed)
+    .join("g")
+    .attr("class", "mobility-group")
+    .attr("transform", d => `translate(${x0(d.group)}, 0)`);
+
+  group.selectAll("rect")
+    .data(d => diabetesTypes.map(type => ({ key: type, value: d[type] || 0, group: d.group })))
+    .join("rect")
+    .attr("x", d => x1(d.key))
+    .attr("width", x1.bandwidth())
+    .attr("fill", d => color(d.key))
+    .on("mouseover", (event, d) => {
+      tooltip.transition().duration(150).style("opacity", 1);
+      tooltip.html(`
+        <strong>${filter === "income" ? "Income" : "Education"}:</strong> ${d.group}<br/>
+        <strong>${d.key}</strong><br/>
+        <strong>Mobility Difficulty:</strong> ${d.value}%
+      `);
+    })
+    .on("mousemove", (event) => {
+      tooltip
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 40}px`);
+    })
+    .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0))
+    .transition()
+    .duration(1000)
+    .attr("y", d => y(d.value))
+    .attr("height", d => height - y(d.value));
+
+  svg.append("text")
+    .attr("class", "y-axis-label")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -50)
+    .style("font-weight", "bold")
+    .text("Mobility Difficulty (%)");
+
+  svg.append("text")
+    .attr("class", "x-axis-label")
+    .attr("text-anchor", "middle")
+    .attr("x", width / 2)
+    .attr("y", height + 80)
+    .style("font-weight", "bold")
+    .text(filter === "income" ? "Income Group" : "Education Level");
 }
