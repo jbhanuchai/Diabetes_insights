@@ -184,5 +184,34 @@ def gender_split_diabetic():
 
     return jsonify(result)
 
+@app.route("/data/mobility_by_diabetes")
+def mobility_by_diabetes():
+    filter_type = request.args.get("filter", "income")  # income or education
+    if filter_type not in ["income", "education"]:
+        return jsonify([])
+
+    group_col = "Income" if filter_type == "income" else "Education"
+    
+    results = []
+    for diabetes_status in [0, 1, 2]:
+        subset = df[df["Diabetes_012"] == diabetes_status]
+        grouped = subset.groupby(group_col)
+        
+        for group_val, group_df in grouped:
+            total = len(group_df)
+            count_diff = group_df["DiffWalk"].sum()
+            percent = round((count_diff / total) * 100, 2) if total > 0 else 0
+            
+            results.append({
+                "group": str(group_val),
+                "diabetes": diabetes_status,
+                "count": int(count_diff),
+                "total": int(total),
+                "percent": percent
+            })
+
+
+    return jsonify(results)
+
 if __name__ == "__main__":
     app.run(debug=True)
