@@ -4,14 +4,14 @@ function getLegendTextColor() {
 
 // Constants for color mappings
 const genderColors = {
-  "Male": "#1f77b4",       // Blue
-  "Female": "#9467bd"     // Purple
+  "Male": "#4575b4",       // Soft blue
+  "Female": "#d73090"      // Deep magenta
 };
 
 const diabetesColors = {
-  "No Diabetes": "#66c2a5",     // Green
-  "Pre-Diabetes": "#fc8d62",   // Orange
-  "Diabetes": "#e41a1c"        // Red
+  "No Diabetes": "#1b9e77",     // Teal green
+  "Pre-Diabetes": "#ffb74d",   // Amber/Orange
+  "Diabetes": "#e74c3c"        // Bright red
 };
 
 function getGenderColor(gender) {
@@ -216,7 +216,7 @@ async function renderGenderEducationStackedBar() {
       .attr("x", i * 100).attr("y", 0)
       .attr("width", 16).attr("height", 16)
       .attr("fill", color(g));
-    legend.append("text")
+      legend.append("text")
       .attr("x", i * 100 + 22).attr("y", 13)
       .text(g);
   });
@@ -392,11 +392,11 @@ async function renderIncomeGroupedBar() {
       .attr("fill", color(type));
     legend.append("text")
       .attr("x", i * 140 + 22).attr("y", 13)
-      .text(type);
+      .text(type).style("fill", getLegendTextColor());
   });
   
   // Y Axis Label
-  svg.append("text")
+svg.append("text")
   .attr("class", "y-axis-label")
   .attr("text-anchor", "middle")
   .attr("transform", `rotate(-90)`)
@@ -620,20 +620,42 @@ async function renderMobilityByDiabetesBar() {
     .attr("y", d => y(d.value))
     .attr("height", d => height - y(d.value));
 
-  svg.append("text")
-    .attr("class", "y-axis-label")
-    .attr("text-anchor", "middle")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -height / 2)
-    .attr("y", -50)
-    .style("font-weight", "bold")
-    .text("Mobility Difficulty (%)");
+    // Legend
+    const legend = svg.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(0, ${height + 30})`);
+
+  diabetesTypes.forEach((type, i) => {
+    const legendItem = legend.append("g")
+      .attr("transform", `translate(${i * 160}, 0)`);
+
+    legendItem.append("rect")
+      .attr("width", 16)
+      .attr("height", 16)
+      .attr("fill", color(type));
+
+    legendItem.append("text")
+      .attr("x", 22)
+      .attr("y", 13)
+      .text(type)
+      .style("fill", getLegendTextColor()) // Ensure theme-aware text color
+      .style("font-size", "13px");
+  });
 
   svg.append("text")
-    .attr("class", "x-axis-label")
-    .attr("text-anchor", "middle")
-    .attr("x", width / 2)
-    .attr("y", height + 80)
-    .style("font-weight", "bold")
-    .text(filter === "income" ? "Income Group" : "Education Level");
+  .attr("class", "x-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("x", width / 2)
+  .attr("y", height + 60)
+  .style("font-weight", "bold")
+  .text(filter === "income" ? "Income Group" : "Education Level");
+
+  svg.append("text")
+  .attr("class", "y-axis-label")
+  .attr("text-anchor", "middle")
+  .attr("transform", "rotate(-90)")
+  .attr("x", -height / 2)
+  .attr("y", -50)
+  .style("font-weight", "bold")
+  .text(showPercentage ? "Mobility Difficulty (%)" : "Mobility Difficulty Count");
 }

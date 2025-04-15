@@ -1,83 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Health Disparities</title>
-  <link rel="stylesheet" href="static/css/style.css">
+  <link rel="stylesheet" href="static/css/style.css" />
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .sidebar {
+      background-color: #1c2b4a;
+      color: #fff;
+      width: 220px;
+      padding: 1.5rem 1rem;
+      height: 100vh;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      margin-bottom: 1rem;
+    }
+
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #fff;
+      padding: 10px 16px;
+      display: block;
+      border-radius: 8px;
+      background-color: #2f4067;
+    }
+
+    .sidebar ul li a.active,
+    .sidebar ul li a:hover {
+      background-color: #ef476f;
+    }
+
+    .sidebar button {
+      margin-top: 2rem;
+      background: #444;
+      color: #fff;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .content {
+      flex-grow: 1;
+      padding: 2rem;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .dashboard-filters {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .reset-button {
+      background: #ccc;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .modern-toggle {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+
+    .modern-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .modern-toggle .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .modern-toggle .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    .modern-toggle input:checked + .slider {
+      background-color: #4caf50;
+    }
+
+    .modern-toggle input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .chart-grid.two-column {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: var(--card-bg, #fff);
+      padding: 1rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      min-height: 360px;
+    }
+
+    #pie-gender svg {
+      margin: 0 auto;
+      display: block;
+    }
+
+    .dropdown-wrapper {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+    }
+
+    @media (max-width: 900px) {
+      .chart-grid.two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <nav class="sidebar">
-    <h2>Diabetes Insights</h2>
-    <ul>
-      <li><a href="index.html">Overview</a></li>
-      <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
-      <li><a href="health_factors.html">Health Related Factors</a></li>
-      <li><a href="health_disparities.html" class="active">Health Disparities</a></li>
-    </ul>
-    <button id="darkModeToggle">Toggle Dark Mode</button>
-  </nav>
+  <div class="container">
+    <nav class="sidebar">
+      <h2>Diabetes Insights</h2>
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
+        <li><a href="health_factors.html">Health Related Factors</a></li>
+        <li><a href="health_disparities.html" class="active">Health Disparities</a></li>
+      </ul>
+      <button id="darkModeToggle">Toggle Dark Mode</button>
+    </nav>
 
-  <main class="content">
-    <header>
-      <h1>Health Disparities</h1>
-    </header>
+    <main class="content">
+      <header class="dashboard-header">
+        <h1>Health Disparities</h1>
+        <div class="dashboard-filters">
+          <label for="gender-filter">Gender:</label>
+          <select id="gender-filter">
+            <option value="All">All</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
 
-    <!-- Top Filters (Shared) -->
-    <div class="dashboard-filters">
-      <label for="gender-filter">Gender:</label>
-      <select id="gender-filter">
-        <option value="All">All</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-      </select>
-    
-      <div class="toggle-wrapper">
-        <label class="modern-toggle">
-          <input type="checkbox" id="toggleScaleSwitch" checked>
-          <span class="slider"></span>
-        </label>
-        <span id="scaleLabel">Percentage</span>        
-      </div>
-    
-      <button id="resetFilters" class="reset-button">Reset Filters</button>
-    </div>    
+          <label class="modern-toggle">
+            <input type="checkbox" id="toggleScaleSwitch" checked />
+            <span class="slider"></span>
+          </label>
+          <span id="scaleLabel">Percentage</span>
 
-    <!-- Grid for Visualizations -->
-    <section class="chart-grid">
-      <div class="chart-card">
-        <h3>Stacked Bar Chart – Gender × Education vs Diabetes</h3>
-        <div id="chart-education-gender"></div>
-      </div>
+          <button id="resetFilters" class="reset-button">Reset Filters</button>
+        </div>
+      </header>
 
-      <div class="chart-card">
-        <h3>Grouped Bar Chart – Diabetes by Income</h3>
-        <div id="grouped-bar-income"></div>
-      </div>
+      <section class="chart-grid two-column">
+        <div class="chart-card">
+          <h3>Stacked Bar – Gender × Education vs Diabetes</h3>
+          <div id="chart-education-gender"></div>
+        </div>
 
-      <div class="chart-card">
-        <h3>Pie Chart – Gender Split in Diabetic Population</h3>
-        <div id="pie-gender"></div>
-      </div>
-      
-      <div class="dropdown-wrapper">
-        <label for="mobility-filter">Filter by:</label>
-        <select id="mobility-filter">
-          <option value="income">Income</option>
-          <option value="education">Education</option>
-        </select>
-      </div>     
-      <div class="chart-card">
-        <h3>Bar Chart – Mobility Difficulty by Diabetes Status</h3>
-        <div id="mobility-bar"></div>
-      </div> 
-    </section>
-  </main>
-</div>
+        <div class="chart-card">
+          <h3>Grouped Bar – Diabetes by Income</h3>
+          <div id="grouped-bar-income"></div>
+        </div>
 
-<script src="static/js/main.js"></script>
-<script src="static/js/visualization.js"></script>
+        <div class="chart-card">
+          <h3>Pie Chart – Gender Split in Diabetic Population</h3>
+          <div id="pie-gender"></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="dropdown-wrapper">
+            <label for="mobility-filter">Filter by:</label>
+            <select id="mobility-filter">
+              <option value="income">Income</option>
+              <option value="education">Education</option>
+            </select>
+          </div>
+          <h3>Mobility Difficulty by Diabetes Status</h3>
+          <div id="mobility-bar"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="static/js/main.js"></script>
+  <script src="static/js/visualization.js"></script>
 </body>
 </html>
