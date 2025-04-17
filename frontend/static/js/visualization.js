@@ -1,3 +1,15 @@
+const INCOME_LEVELS = {
+  1: "Less than $10,000",
+  2: "$10,000 - $14,999",
+  3: "$15,000 -  $19,999",
+  4: "$20,000 -  $24,999",
+  5: "$25,000 - $34,999",
+  6: "$35,000 - $49,999",
+  7: "$50,000 - $74,999",
+  8: "$75,000 or more"
+};
+
+
 function getLegendTextColor() {
   return document.body.classList.contains("dark-mode") ? "#fff" : "#000";
 }
@@ -121,7 +133,7 @@ async function renderGenderEducationStackedBar() {
 
   const svg = d3.select("#chart-education-gender")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width + margin.left + margin.right + 150)
     .attr("height", height + margin.top + margin.bottom + 60)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -210,16 +222,17 @@ async function renderGenderEducationStackedBar() {
     .attr("height", d => y(d[0]) - y(d[1]));
 
   // Legend
-  const legend = svg.append("g").attr("transform", `translate(0, ${height + 50})`);
-  genders.forEach((g, i) => {
-    legend.append("rect")
-      .attr("x", i * 100).attr("y", 0)
-      .attr("width", 16).attr("height", 16)
-      .attr("fill", color(g));
-      legend.append("text")
-      .attr("x", i * 100 + 22).attr("y", 13)
-      .text(g);
-  });
+  const legend = svg.append("g").attr("transform", `translate(${width + 30}, 0)`);
+genders.forEach((g, i) => {
+  const yOffset = i * 24;
+  legend.append("rect")
+    .attr("x", 0).attr("y", yOffset)
+    .attr("width", 16).attr("height", 16)
+    .attr("fill", color(g));
+  legend.append("text")
+    .attr("x", 22).attr("y", yOffset + 13)
+    .text(g);
+});
   // Y Axis Label
   svg.append("text")
   .attr("class", "y-axis-label")
@@ -321,7 +334,7 @@ async function renderIncomeGroupedBar() {
 
   const svg = d3.select("#grouped-bar-income")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width + margin.left + margin.right + 150)
     .attr("height", height + margin.top + margin.bottom + 60)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -346,7 +359,8 @@ async function renderIncomeGroupedBar() {
     .join("g")
     .attr("class", "x-axis")
     .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(x0));
+    .call(d3.axisBottom(x0).tickFormat(d => INCOME_LEVELS[d] || d));
+
 
   xAxis.selectAll("text")
     .attr("transform", "rotate(-35)")
@@ -362,7 +376,7 @@ async function renderIncomeGroupedBar() {
     .data(d => diabetesTypes.map(type => ({
       key: type,
       value: d[type],
-      income: d.income
+      income: INCOME_LEVELS[d.income] || d.income
     })))
     .join("rect")
     .attr("x", d => x1(d.key))
@@ -385,15 +399,18 @@ async function renderIncomeGroupedBar() {
     .attr("height", d => height - y(d.value));
 
   // Legend
-  const legend = svg.append("g").attr("transform", `translate(0, ${height + 50})`);
-  diabetesTypes.forEach((type, i) => {
-    legend.append("rect")
-      .attr("x", i * 140).attr("width", 16).attr("height", 16)
-      .attr("fill", color(type));
-    legend.append("text")
-      .attr("x", i * 140 + 22).attr("y", 13)
-      .text(type).style("fill", getLegendTextColor());
-  });
+  const legend = svg.append("g").attr("transform", `translate(${width + 30}, 0)`);
+diabetesTypes.forEach((type, i) => {
+  const yOffset = i * 24;
+  legend.append("rect")
+    .attr("x", 0).attr("y", yOffset)
+    .attr("width", 16).attr("height", 16)
+    .attr("fill", color(type));
+  legend.append("text")
+    .attr("x", 22).attr("y", yOffset + 13)
+    .text(type)
+    .style("fill", getLegendTextColor());
+});
   
   // Y Axis Label
 svg.append("text")
@@ -420,14 +437,14 @@ async function renderGenderPieChart() {
   const data = await fetch(`${API_BASE}/data/gender_split_diabetic`).then(res => res.json());
 
   d3.select("#pie-gender").html(""); // Clear previous chart
-  const width = 400, height = 400, radius = Math.min(width, height) / 2;
+  const width = 650, height = 400, radius = Math.min(width, height) / 2;
 
   const svg = d3.select("#pie-gender")
     .append("svg")
     .attr("width", width)
     .attr("height", height + 80)
     .append("g")
-    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+    .attr("transform", `translate(${width / 2 - 60}, ${height / 2})`);
 
   const color = d3.scaleOrdinal().domain(data.map(d => d.gender)).range(data.map(d => getGenderColor(d.gender)));
 
@@ -496,30 +513,35 @@ async function renderGenderPieChart() {
     .style("fill", d => document.body.classList.contains("dark-mode") ? "#fff" : "#000");
 
   // Legend with filtering
-  const legend = svg.append("g").attr("transform", `translate(${-radius}, ${radius + 30})`);
+  const legend = svg.append("g")
+  .attr("transform", `translate(${radius + 100}, ${-radius})`);
 
-  data.forEach((d, i) => {
-    const g = legend.append("g")
-      .attr("transform", `translate(0, ${i * 22})`)
-      .style("cursor", "pointer")
-      .on("click", () => {
-        selectedGender = d.gender;
-        document.getElementById("gender-filter").value = selectedGender;
-        renderGenderEducationStackedBar();
-        renderIncomeGroupedBar();
-        renderGenderPieChart(); // re-render for sync
-      });
+data.forEach((d, i) => {
+  const yOffset = i * 24;
+  const g = legend.append("g")
+    .attr("transform", `translate(0, ${yOffset})`)
+    .style("cursor", "pointer")
+    .on("click", () => {
+      selectedGender = d.gender;
+      document.getElementById("gender-filter").value = selectedGender;
+      renderGenderEducationStackedBar();
+      renderIncomeGroupedBar();
+      renderGenderPieChart();
+    });
 
     g.append("rect")
       .attr("width", 16)
       .attr("height", 16)
       .attr("fill", color(d.gender));
 
-    g.append("text")
+      g.append("text")
       .attr("x", 22)
       .attr("y", 13)
-      .text(`${d.gender}`)
-      .style("fill", document.body.classList.contains("dark-mode") ? "#fff" : "#000");
+      .text(d.gender)
+      .style("font-size", "13px")
+      .style("fill", document.body.classList.contains("dark-mode") ? "#fff" : "#000")
+      .style("font-size", "13px")
+      .style("font-weight", "500");  
   });
 }
 
@@ -551,7 +573,7 @@ async function renderMobilityByDiabetesBar() {
 
   const svg = d3.select("#mobility-bar")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width + margin.left + margin.right + 150)
     .attr("height", height + margin.top + margin.bottom + 60)
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -621,32 +643,33 @@ async function renderMobilityByDiabetesBar() {
     .attr("height", d => height - y(d.value));
 
     // Legend
-    const legend = svg.append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(0, ${height + 30})`);
+   const legend = svg.append("g")
+  .attr("class", "legend")
+  .attr("transform", `translate(${width + 30}, 0)`);
 
-  diabetesTypes.forEach((type, i) => {
-    const legendItem = legend.append("g")
-      .attr("transform", `translate(${i * 160}, 0)`);
+diabetesTypes.forEach((type, i) => {
+  const yOffset = i * 24;
+  const legendItem = legend.append("g")
+    .attr("transform", `translate(0, ${yOffset})`);
 
-    legendItem.append("rect")
-      .attr("width", 16)
-      .attr("height", 16)
-      .attr("fill", color(type));
+  legendItem.append("rect")
+    .attr("width", 16)
+    .attr("height", 16)
+    .attr("fill", color(type));
 
-    legendItem.append("text")
-      .attr("x", 22)
-      .attr("y", 13)
-      .text(type)
-      .style("fill", getLegendTextColor()) // Ensure theme-aware text color
-      .style("font-size", "13px");
-  });
+  legendItem.append("text")
+    .attr("x", 22)
+    .attr("y", 13)
+    .text(type)
+    .style("fill", getLegendTextColor())
+    .style("font-size", "13px");
+});
 
   svg.append("text")
   .attr("class", "x-axis-label")
   .attr("text-anchor", "middle")
   .attr("x", width / 2)
-  .attr("y", height + 60)
+  .attr("y", height + 85)
   .style("font-weight", "bold")
   .text(filter === "income" ? "Income Group" : "Education Level");
 
