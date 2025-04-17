@@ -40,6 +40,17 @@ EDUCATION_LEVELS = {
     6: "Post Graduate"
 }
 
+INCOME_LEVELS = {
+  1: "Less than $10,000",
+  2: "$10,000 - $14,999",
+  3: "$15,000 - $19,999",
+  4: "$20,000 - $24,999",
+  5: "$25,000 - $34,999",
+  6: "$35,000 - $49,999",
+  7: "$50,000 - $74,999",
+  8: "$75,000 or more"
+}
+
 @app.route("/data/summary")
 def get_summary():
     total_cases = df["Diabetes_012"].count()
@@ -149,7 +160,7 @@ def income_diabetes():
 
     results = []
     for _, row in grouped.iterrows():
-        income = str(row["Income"])
+        income = INCOME_LEVELS.get(int(row["Income"]), str(row["Income"]))
         diabetes = diabetes_labels.get(int(row["Diabetes_012"]), "Unknown")
         count = int(row["count"])
         total = total_per_income.get(row["Income"], 1)
@@ -203,8 +214,8 @@ def mobility_by_diabetes():
             percent = round((count_diff / total) * 100, 2) if total > 0 else 0
             
             results.append({
-                "group": str(group_val),
-                "diabetes": diabetes_status,
+                "group": INCOME_LEVELS.get(int(group_val), str(group_val)) if group_col == "Income" else EDUCATION_LEVELS.get(int(group_val), str(group_val))
+,                "diabetes": diabetes_status,
                 "count": int(count_diff),
                 "total": int(total),
                 "percent": percent
