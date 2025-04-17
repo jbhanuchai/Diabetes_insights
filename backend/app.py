@@ -87,5 +87,33 @@ def get_cases_by_filters():
     
     return jsonify({"total_cases": int(total_cases)})
 
+@app.route("/data/diabetes_by_age_group", methods=["POST"])
+def diabetes_by_age_group():
+    data = request.json
+    genders = data.get("genders", [])
+    educations = data.get("educations", [])
+    diabetes_status = data.get("diabetes_status", None)
+
+    filtered_df = df.copy()
+
+    # Apply filters
+    if genders:
+        gender_nums = [int(g) for g in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+
+    if educations:
+        education_nums = [key for key, value in EDUCATION_LEVELS.items() if value in educations]
+        filtered_df = filtered_df[filtered_df["Education"].isin(education_nums)]
+
+    result = []
+    for age_num, label in AGE_GROUPS.items():
+        group = filtered_df[filtered_df["Age"] == age_num]
+        total = len(group)
+        match_count = len(group[group["Diabetes_012"] == diabetes_status]) if diabetes_status is not None else 0
+        percentage = round((match_count / total) * 100, 2) if total > 0 else 0
+        result.append({"age_group": label, "percentage": percentage, "count": match_count})
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)
