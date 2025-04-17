@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:5000"; 
+const API_BASE = "http://127.0.0.1:5000";
 
 // Animate only the number for Total Diabetes Cases
 function animateCounter(elementId, targetNumber) {
@@ -21,7 +21,7 @@ function animateCounter(elementId, targetNumber) {
 async function fetchSummaryData() {
     try {
         console.log("Fetching summary data...");
-        const response = await fetch("http://127.0.0.1:5000/data/summary");
+        const response = await fetch(`${API_BASE}/data/summary`);
         const data = await response.json();
 
         const totalCasesElement = document.getElementById("totalCasesCount");
