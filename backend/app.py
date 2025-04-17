@@ -115,5 +115,39 @@ def diabetes_by_age_group():
 
     return jsonify(result)
 
+@app.route("/data/diabetes_by_education", methods=["POST"])
+def diabetes_by_education():
+    data = request.json
+    genders = data.get("genders", [])
+    ages = data.get("ages", [])
+
+    filtered_df = df.copy()
+
+    if genders:
+        gender_nums = [int(g) for g in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+
+    if ages:
+        age_nums = [key for key, value in AGE_GROUPS.items() if value in ages]
+        filtered_df = filtered_df[filtered_df["Age"].isin(age_nums)]
+
+    result = []
+
+    for edu_num, edu_label in EDUCATION_LEVELS.items():
+        edu_group = filtered_df[filtered_df["Education"] == edu_num]
+        total = len(edu_group)
+
+        for status in [0, 1, 2]:
+            count = len(edu_group[edu_group["Diabetes_012"] == status])
+            percentage = round((count / total) * 100, 2) if total > 0 else 0
+            result.append({
+                "education": edu_label,
+                "status": status,
+                "percentage": percentage,
+                "count": count
+            })
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)
