@@ -36,9 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("fixedYAxis").addEventListener("change", renderGroupedBarChart);
     document.getElementById("diabetesTypeSelect").addEventListener("change", renderGroupedBarChart);
     document.getElementById("ageGroupSelect").addEventListener("change", renderLineChart);
-    //document.getElementById("genderSelect").addEventListener("change", fetchHeatmapAgeIncome);
-    
-
 });
 
 async function renderLineChart() {
