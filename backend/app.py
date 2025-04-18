@@ -149,5 +149,52 @@ def diabetes_by_education():
 
     return jsonify(result)
 
+@app.route("/data/heatmap_age_income", methods=["POST"])
+def heatmap_age_income():
+    data = request.json
+    genders = data.get("genders", [])
+    educations = data.get("educations", [])
+    age_groups = data.get("age_groups", [])
+    diabetes_status = data.get("diabetes_status", None)
+
+    filtered_df = df.copy()
+
+    if genders:
+        gender_nums = [int(g) for g in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+
+    if educations:
+        edu_nums = [key for key, val in EDUCATION_LEVELS.items() if val in educations]
+        filtered_df = filtered_df[filtered_df["Education"].isin(edu_nums)]
+
+    if age_groups:
+        age_nums = [key for key, val in AGE_GROUPS.items() if val in age_groups]
+        filtered_df = filtered_df[filtered_df["Age"].isin(age_nums)]
+    else:
+        age_nums = filtered_df["Age"].unique()
+
+    result = []
+    for age_num in sorted(age_nums):
+        age_label = AGE_GROUPS.get(age_num, "Unknown")
+
+        for income_level in sorted(filtered_df["Income"].unique()):
+            subset = filtered_df[(filtered_df["Age"] == age_num) & (filtered_df["Income"] == income_level)]
+
+            if diabetes_status is not None:
+                subset = subset[subset["Diabetes_012"] == diabetes_status]
+
+            total = len(subset)
+            diabetic = len(subset[subset["Diabetes_012"] == 2])
+            percentage = round((diabetic / total) * 100, 2) if total > 0 else 0
+
+            result.append({
+                "age_group": age_label,
+                "income_level": str(income_level),
+                "percentage": percentage,
+                "count": diabetic
+            })
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)
