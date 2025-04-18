@@ -1,34 +1,28 @@
 import pandas as pd
 
-# Path to your CSV file
-csv_file = "../data/diabetes_cleaned.csv"
+# Load the dataset
+file_path = "../data/diabetes_012_health_indicators_BRFSS2015.csv"
+df = pd.read_csv(file_path)
 
-# Read CSV file into a DataFrame
-df = pd.read_csv(csv_file)
+# Remove columns with excessive missing values
+df_cleaned = df.dropna(axis=1)
 
-# Assuming age group "18-24" is represented by the number 1 in the 'Age' column
-age_group_number = 2  # for age group 18-24
+# Convert categorical columns to appropriate formats
+df_cleaned["Diabetes_012"] = df_cleaned["Diabetes_012"].astype(int)  # Ensure diabetes status is integer
+df_cleaned["Sex"] = df_cleaned["Sex"].astype(int)  # Convert gender to integer
+df_cleaned["Education"] = df_cleaned["Education"].astype(int)  # Convert education to integer
+df_cleaned["Income"] = df_cleaned["Income"].astype(int)  # Convert income to integer
+df_cleaned["Age"] = df_cleaned["Age"].astype(int)  # Ensure Age is numeric
 
-# Filter the DataFrame for the selected age group and count the diabetes cases
-total_cases = df[df["Age"] == age_group_number]["Diabetes_012"].count()
+# Convert general health (GenHlth) to categorical for easy visualization
+df_cleaned["GenHlth"] = df_cleaned["GenHlth"].astype(int)
 
-print("Total diabetes cases for age 18-24:", total_cases)
+# Ensure all remaining columns used for correlation analysis are numeric
+numeric_cols = df_cleaned.select_dtypes(include=["int64", "float64"]).columns
+df_cleaned = df_cleaned[numeric_cols]
 
-# Get total number of rows and columns
-total_rows, total_columns = df.shape
+# Save the cleaned dataset
+cleaned_file_path = "../data/diabetes_cleaned.csv"
+df_cleaned.to_csv(cleaned_file_path, index=False)
 
-print(f"Total number of rows: {total_rows}")
-print(f"Total number of columns: {total_columns}")
-
-num_males = (df["Sex"] == 1).sum()
-num_females = (df["Sex"] == 0).sum()
-
-# Print results
-print(f"Number of Males: {num_males}")
-print(f"Number of Females: {num_females}")
-
-education_counts = df["Education"].value_counts()
-
-# Print education level counts
-print("Education Level Counts:")
-print(education_counts)
+print(f"Cleaned dataset saved at: {cleaned_file_path}")
