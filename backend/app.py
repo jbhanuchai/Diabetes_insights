@@ -224,6 +224,7 @@ def mobility_by_diabetes():
 
     return jsonify(results)
 
+
 @app.route("/data/diabetes_by_age_group", methods=["POST"])
 def diabetes_by_age_group():
     data = request.json

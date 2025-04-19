@@ -1,3 +1,15 @@
+
+const INCOME_LEVELS = {
+    1: "Less than $10,000",
+    2: "$10,000 - $14,999",
+    3: "$15,000 - $19,999",
+    4: "$20,000 - $24,999",
+    5: "$25,000 - $34,999",
+    6: "$35,000 - $49,999",
+    7: "$50,000 - $74,999",
+    8: "$75,000 or more"
+};
+
 const API_BASE = "http://127.0.0.1:5000";
 
 const statusLabels = {
@@ -24,7 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("fixedYAxis").addEventListener("change", renderGroupedBarChart);
     document.getElementById("diabetesTypeSelect").addEventListener("change", renderGroupedBarChart);
     document.getElementById("ageGroupSelect").addEventListener("change", renderLineChart);
-    document.getElementById("genderSelect").addEventListener("change", fetchHeatmapAgeIncome);
+    //document.getElementById("genderSelect").addEventListener("change", fetchHeatmapAgeIncome);
+    
+
 });
 
 async function renderLineChart() {
@@ -316,6 +330,7 @@ async function fetchHeatmapAgeIncome() {
     });
 
     const data = await response.json();
+    data.forEach(d => d.income_level = parseInt(d.income_level));
     renderHeatmapAgeIncome(data, "#heatmap-age-income");
 }
 
@@ -351,14 +366,20 @@ function renderHeatmapAgeIncome(data, svgId) {
 
     xAxisGroup.transition()
         .duration(800)
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(x).tickFormat(d => INCOME_LEVELS[d]))
         .selection()
         .selectAll("text")
+        .attr("transform", "rotate(-30)")
+        .style("text-anchor", "end")
         .style("font-size", "12px")
         .style("opacity", 0)
         .transition()
         .duration(750)
-        .style("opacity", 1);
+        .style("opacity", 1);    
+
+    xAxisGroup.selectAll("text")
+        .attr("transform", "rotate(-30)")
+        .style("text-anchor", "end");
 
     yAxisGroup.transition()
         .duration(800)
