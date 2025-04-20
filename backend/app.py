@@ -224,5 +224,115 @@ def mobility_by_diabetes():
 
     return jsonify(results)
 
+
+@app.route("/data/diabetes_by_age_group", methods=["POST"])
+def diabetes_by_age_group():
+    data = request.json
+    genders = data.get("genders", [])
+    educations = data.get("educations", [])
+    diabetes_status = data.get("diabetes_status", None)
+
+    filtered_df = df.copy()
+
+    # Apply filters
+    if genders:
+        gender_nums = [int(g) for g in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+
+    if educations:
+        education_nums = [key for key, value in EDUCATION_LEVELS.items() if value in educations]
+        filtered_df = filtered_df[filtered_df["Education"].isin(education_nums)]
+
+    result = []
+    for age_num, label in AGE_GROUPS.items():
+        group = filtered_df[filtered_df["Age"] == age_num]
+        total = len(group)
+        match_count = len(group[group["Diabetes_012"] == diabetes_status]) if diabetes_status is not None else 0
+        percentage = round((match_count / total) * 100, 2) if total > 0 else 0
+        result.append({"age_group": label, "percentage": percentage, "count": match_count})
+
+    return jsonify(result)
+
+@app.route("/data/diabetes_by_education", methods=["POST"])
+def diabetes_by_education():
+    data = request.json
+    genders = data.get("genders", [])
+    ages = data.get("ages", [])
+
+    filtered_df = df.copy()
+
+    if genders:
+        gender_nums = [int(g) for g in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+
+    if ages:
+        age_nums = [key for key, value in AGE_GROUPS.items() if value in ages]
+        filtered_df = filtered_df[filtered_df["Age"].isin(age_nums)]
+
+    result = []
+
+    for edu_num, edu_label in EDUCATION_LEVELS.items():
+        edu_group = filtered_df[filtered_df["Education"] == edu_num]
+        total = len(edu_group)
+
+        for status in [0, 1, 2]:
+            count = len(edu_group[edu_group["Diabetes_012"] == status])
+            percentage = round((count / total) * 100, 2) if total > 0 else 0
+            result.append({
+                "education": edu_label,
+                "status": status,
+                "percentage": percentage,
+                "count": count
+            })
+
+    return jsonify(result)
+
+@app.route("/data/heatmap_age_income", methods=["POST"])
+def heatmap_age_income():
+    data = request.json
+    genders = data.get("genders", [])
+    educations = data.get("educations", [])
+    age_groups = data.get("age_groups", [])
+    diabetes_status = data.get("diabetes_status", None)
+
+    filtered_df = df.copy()
+
+    if genders:
+        gender_nums = [int(g) for g in genders]
+        filtered_df = filtered_df[filtered_df["Sex"].isin(gender_nums)]
+
+    if educations:
+        edu_nums = [key for key, val in EDUCATION_LEVELS.items() if val in educations]
+        filtered_df = filtered_df[filtered_df["Education"].isin(edu_nums)]
+
+    if age_groups:
+        age_nums = [key for key, val in AGE_GROUPS.items() if val in age_groups]
+        filtered_df = filtered_df[filtered_df["Age"].isin(age_nums)]
+    else:
+        age_nums = filtered_df["Age"].unique()
+
+    result = []
+    for age_num in sorted(age_nums):
+        age_label = AGE_GROUPS.get(age_num, "Unknown")
+
+        for income_level in sorted(filtered_df["Income"].unique()):
+            subset = filtered_df[(filtered_df["Age"] == age_num) & (filtered_df["Income"] == income_level)]
+
+            if diabetes_status is not None:
+                subset = subset[subset["Diabetes_012"] == diabetes_status]
+
+            total = len(subset)
+            diabetic = len(subset[subset["Diabetes_012"] == 2])
+            percentage = round((diabetic / total) * 100, 2) if total > 0 else 0
+
+            result.append({
+                "age_group": age_label,
+                "income_level": str(income_level),
+                "percentage": percentage,
+                "count": diabetic
+            })
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)
