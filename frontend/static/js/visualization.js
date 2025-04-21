@@ -271,13 +271,12 @@ document.addEventListener("DOMContentLoaded", () => {
     renderIncomeGroupedBar();
     renderGenderPieChart();
   });
-
+  
   document.getElementById("toggleScaleSwitch").addEventListener("change", (e) => {
     showPercentage = e.target.checked;
     document.getElementById("scaleLabel").textContent = showPercentage ? "Percentage" : "Count";
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
-    renderGenderPieChart();
     renderMobilityByDiabetesBar();
   });
 
@@ -285,16 +284,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("gender-filter").value = "All";
     selectedGender = "All";
     showPercentage = true;
-    document.getElementById("toggleScaleSwitch").checked = true;
     document.getElementById("scaleLabel").textContent = "Percentage";
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
     renderGenderPieChart();
     renderMobilityByDiabetesBar();
-  });
-
-  document.getElementById("darkModeToggle").addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
   });
 });
 
