@@ -1,98 +1,114 @@
 const API_BASE = "http://127.0.0.1:5000";
 
-// Animate only the number for Total Diabetes Cases
-function animateCounter(elementId, targetNumber) {
-    let count = 0;
-    let increment = Math.ceil(targetNumber / 100);
-    
-    function updateCounter() {
-        if (count < targetNumber) {
-            count += increment;
-            document.getElementById(elementId).innerText = count;
-            setTimeout(updateCounter, 10);
-        } else {
-            document.getElementById(elementId).innerText = targetNumber;
-        }
+document.addEventListener("DOMContentLoaded", () => {
+  const fileInput = document.getElementById("csvFile");
+  const reuploadInput = document.getElementById("reuploadFile");
+  const reuploadBtn = document.getElementById("reuploadBtn");
+
+  // Initial file upload
+  fileInput?.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (file) uploadFile(file);
+  });
+
+  // Reupload trigger
+  reuploadBtn?.addEventListener("click", () => {
+    reuploadInput.click();
+  });
+
+  // Reupload actual file input
+  reuploadInput?.addEventListener("change", () => {
+    const file = reuploadInput.files[0];
+    if (file) {
+      console.log("Reuploading file:", file.name);  // ✅ Added logging
+      resetDashboard();
+      uploadFile(file);
     }
-    updateCounter();
-}
+  });
 
-// Fetch and update summary data
-async function fetchSummaryData() {
-    try {
-        console.log("Fetching summary data...");
-        const response = await fetch(`${API_BASE}/data/summary`);
-        const data = await response.json();
+  // Try loading summary if data is already uploaded
+  loadDashboardIfAvailable();
+});
 
-        const totalCasesElement = document.getElementById("totalCasesCount");
-        if (totalCasesElement) {
-            totalCasesElement.innerText = data.total_cases;
-        }
+// Upload the selected CSV
+function uploadFile(file) {
+  const formData = new FormData();
+  formData.append("file", file);
 
-        const highestAgeGroupElement = document.getElementById("highestAgeGroup");
-        if (highestAgeGroupElement) {
-            highestAgeGroupElement.innerText = data.highest_age_group;
-        }
+  fetch(`${API_BASE}/upload`, {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Uploaded:", data.message);
 
-    } catch (error) {
-        console.error("Error fetching summary data:", error);
-    }
-}
+      // UI Updates
+      document.getElementById("upload-container").style.display = "none";
+      document.getElementById("csvFile").style.display = "none";
+      document.getElementById("reupload-container").style.display = "block";
+      document.getElementById("dashboard-container").style.display = "block";
 
-function showFilter(type) {
-    console.log(`Filter selected: ${type}`);
-    
-    document.querySelectorAll('.filter-group').forEach(div => div.style.display = 'none');
-    
-    document.getElementById(`${type}-filters`).style.display = 'flex';
-    
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    
-    document.querySelector(`button[onclick="showFilter('${type}')"]`).classList.add('active');
-}
+      // Clear file inputs
+      document.getElementById("csvFile").value = "";
+      document.getElementById("reuploadFile").value = "";
 
-/// Update fetchFilteredData to include education
-async function fetchFilteredData(ageGroups, genders, educations) {
-    try {
-        const response = await fetch(`${API_BASE}/data/filter`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ 
-                age_groups: ageGroups, 
-                genders: genders,
-                educations: educations 
-            }),
-        });
+      // ✅ Update reupload button to show filename
+      document.getElementById("reuploadBtn").innerText = `Reupload (${file.name})`;
 
-        const data = await response.json();
-
-        // Only update total cases if the element exists (to avoid errors)
-        const totalCasesElement = document.getElementById("totalCasesCount");
-        if (totalCasesElement) {
-            totalCasesElement.innerText = data.total_cases;
-        }
-
-    } catch (error) {
-        console.error("Error fetching filtered data:", error);
-    }
-}
-
-// Update event listeners to include education checkboxes
-document.querySelectorAll("#age-filters input, #sex-filters input, #education-filters input").forEach(checkbox => {
-    checkbox.addEventListener("change", function () {
-        let selectedAgeGroups = Array.from(document.querySelectorAll("#age-filters input:checked"))
-                                    .map(cb => cb.value);
-        let selectedGenders = Array.from(document.querySelectorAll("#sex-filters input:checked"))
-                                  .map(cb => cb.value);
-        let selectedEducations = Array.from(document.querySelectorAll("#education-filters input:checked"))
-                                    .map(cb => cb.value);
-        
-        fetchFilteredData(selectedAgeGroups, selectedGenders, selectedEducations);
+      fetchSummaryData();
+    })
+    .catch(err => {
+      console.error("Upload failed:", err);
+      alert("Upload failed. Please try again.");
     });
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
-    fetchSummaryData();
-});
+// Try to load dashboard if data already exists
+function loadDashboardIfAvailable() {
+  fetch(`${API_BASE}/data/summary?ts=${Date.now()}`)  // ✅ Bypass caching
+    .then(res => {
+      if (!res.ok) return null;
+      return res.json();
+    })
+    .then(data => {
+      if (!data || data.total_cases === null) {
+        console.log("Dataset not yet uploaded.");
+        return;
+      }
+
+      document.getElementById("upload-container").style.display = "none";
+      document.getElementById("csvFile").style.display = "none";
+      document.getElementById("reupload-container").style.display = "block";
+      document.getElementById("dashboard-container").style.display = "block";
+
+      updateSummary(data);
+    })
+    .catch(() => {
+      console.log("Dataset not yet uploaded.");
+    });
+}
+
+// Fetch latest summary data after file upload
+function fetchSummaryData() {
+  fetch(`${API_BASE}/data/summary?ts=${Date.now()}`)  // ✅ Bypass caching
+    .then(res => res.json())
+    .then(data => {
+      console.log("Summary data after reupload:", data);  // ✅ Debug
+      updateSummary(data);
+    })
+    .catch(err => console.error("Summary error:", err));
+}
+
+// Update cards with fetched summary values
+function updateSummary(data) {
+  document.getElementById("totalCasesCount").innerText = data.total_cases;
+  document.getElementById("highestAgeGroup").innerText = data.highest_age_group;
+}
+
+// Reset back to upload view (optional step before reupload)
+function resetDashboard() {
+  document.getElementById("dashboard-container").style.display = "none";
+  document.getElementById("upload-container").style.display = "block";
+  document.getElementById("csvFile").style.display = "block";
+}

@@ -417,3 +417,18 @@ body {
     border-radius: 8px;
     padding: 4px 8px;
   }
+  .upload-section {
+    text-align: center;
+    margin-top: 1rem;
+}
+#reupload-container {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  z-index: 10;
+}
+
+#csvFile {
+  padding: 6px;
+  font-family: inherit;
+}
