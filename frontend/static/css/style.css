@@ -70,6 +70,22 @@ body {
     margin-bottom: 30px;
 }
 
+.dashboard-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+.dashboard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+  }
+  
 .filters {
     display: flex;
     justify-content: center;
@@ -420,3 +436,20 @@ body.dark-mode .tooltip {
   gap: 0.2rem;
   font-weight: bold;
 }
+
+.sidebar-title {
+    font-size: 24px;
+    font-weight: 700;
+    /*color: #e43f5a;*/
+    margin-bottom: 20px;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    transition: transform 0.25s ease;
+  }
+  
+  .sidebar-title:hover {
+    transform: scale(1.05);
+    border-radius: 8px;
+    padding: 4px 8px;
+  }
