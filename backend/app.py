@@ -334,5 +334,14 @@ def heatmap_age_income():
 
     return jsonify(result)
 
+@app.route("/data/scatter")
+def get_scatter_data():
+    try:
+        # Return full dataset
+        scatter_data = df[["BMI", "PhysHlth", "Diabetes_012"]].to_dict(orient="records")
+        return jsonify(scatter_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)
