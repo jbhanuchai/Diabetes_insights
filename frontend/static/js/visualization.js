@@ -125,7 +125,7 @@ async function renderGenderEducationStackedBar() {
     return entry;
   });
 
-  const margin = { top: 40, right: 30, bottom: 100, left: 70 },
+  const margin = { top: 40, right: 100, bottom: 100, left: 70 },
         width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -134,7 +134,7 @@ async function renderGenderEducationStackedBar() {
   const svg = d3.select("#chart-education-gender")
     .append("svg")
     .attr("width", width + margin.left + margin.right + 150)
-    .attr("height", height + margin.top + margin.bottom + 60)
+    .attr("height", height + margin.top + margin.bottom + 80)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -222,7 +222,9 @@ async function renderGenderEducationStackedBar() {
     .attr("height", d => y(d[0]) - y(d[1]));
 
   // Legend
-  const legend = svg.append("g").attr("transform", `translate(${width + 30}, 0)`);
+  //const legend = svg.append("g").attr("transform", `translate(${width - 80}, -43)`);
+  const legend = svg.append("g").attr("transform", `translate(${width - 8}, ${height / 2 - 120})`);
+
 genders.forEach((g, i) => {
   const yOffset = i * 24;
   legend.append("rect")
@@ -329,7 +331,7 @@ async function renderIncomeGroupedBar() {
   const svg = d3.select("#grouped-bar-income")
     .append("svg")
     .attr("width", width + margin.left + margin.right + 150)
-    .attr("height", height + margin.top + margin.bottom + 60)
+    .attr("height", height + margin.top + margin.bottom + 100)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -393,7 +395,7 @@ async function renderIncomeGroupedBar() {
     .attr("height", d => height - y(d.value));
 
   // Legend
-  const legend = svg.append("g").attr("transform", `translate(${width + 30}, 0)`);
+  const legend = svg.append("g").attr("transform", `translate(${width - 110}, -42)`);
 diabetesTypes.forEach((type, i) => {
   const yOffset = i * 24;
   legend.append("rect")
@@ -568,7 +570,7 @@ async function renderMobilityByDiabetesBar() {
   const svg = d3.select("#mobility-bar")
     .append("svg")
     .attr("width", width + margin.left + margin.right + 150)
-    .attr("height", height + margin.top + margin.bottom + 60)
+    .attr("height", height + margin.top + margin.bottom + 100)
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
@@ -639,7 +641,7 @@ async function renderMobilityByDiabetesBar() {
     // Legend
    const legend = svg.append("g")
   .attr("class", "legend")
-  .attr("transform", `translate(${width + 30}, 0)`);
+  .attr("transform", `translate(${width - 110}, -42)`);
 
 diabetesTypes.forEach((type, i) => {
   const yOffset = i * 24;

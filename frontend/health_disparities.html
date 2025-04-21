@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,6 +6,7 @@
   <title>Health Disparities</title>
   <link rel="stylesheet" href="static/css/style.css" />
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
   <div class="container">
@@ -22,45 +23,71 @@
     </nav>
 
     <main class="content">
+      <div class="top-right-filters">
+        <label for="gender-filter">Gender:</label>
+        <select id="gender-filter">
+          <option value="All">All</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      
+        <label class="modern-toggle">
+          <input type="checkbox" id="toggleScaleSwitch" checked />
+          <span class="slider"></span>
+        </label>
+        <span id="scaleLabel">Percentage</span>
+      
+        <button id="resetFilters" class="reset-button">Reset Filters</button>
+      </div>
+      
       <header class="dashboard-header">
-        <h1>Health Disparities</h1>
-        <div class="dashboard-filters">
-          <label for="gender-filter">Gender:</label>
-          <select id="gender-filter">
-            <option value="All">All</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-
-          <div class="toggle-wrapper">
-            <label class="modern-toggle">
-              <input type="checkbox" id="toggleScaleSwitch" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="scaleLabel">Percentage</span>
-          </div>          
-
-          <button id="resetFilters" class="reset-button">Reset Filters</button>
+        <div class="dashboard-title-bar">
+          <h1>Health Disparities</h1>
         </div>
       </header>
-
+      
       <section class="chart-grid two-column">
         <div class="chart-card">
-          <h3>Stacked Bar – Gender × Education vs Diabetes</h3>
+          <div class="chart-card-header">
+            <h3>Stacked Bar – Gender × Education vs Diabetes</h3>
+            <div class="chart-card-actions">
+              <button class="info-btn" title="More Info"><i class="fas fa-circle-info"></i></button>
+              <button class="download-btn" title="Download Chart"><i class="fas fa-download"></i></button>
+            </div>
+          </div>
           <div id="chart-education-gender"></div>
         </div>
 
         <div class="chart-card">
-          <h3>Grouped Bar – Diabetes by Income</h3>
+          <div class="chart-card-header">
+            <h3>Grouped Bar – Diabetes by Income</h3>
+            <div class="chart-card-actions">
+              <button class="info-btn" title="More Info"><i class="fas fa-circle-info"></i></button>
+              <button class="download-btn" title="Download Chart"><i class="fas fa-download"></i></button>
+            </div>
+          </div>
           <div id="grouped-bar-income"></div>
         </div>
 
         <div class="chart-card">
-          <h3>Pie Chart – Gender Split in Diabetic Population</h3>
+          <div class="chart-card-header">
+            <h3>Pie Chart – Gender Split in Diabetic Population</h3>
+            <div class="chart-card-actions">
+              <button class="info-btn" title="More Info"><i class="fas fa-circle-info"></i></button>
+              <button class="download-btn" title="Download Chart"><i class="fas fa-download"></i></button>
+            </div>
+          </div>
           <div id="pie-gender"></div>
         </div>
 
         <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Mobility Difficulty by Diabetes Status</h3>
+            <div class="chart-card-actions">
+              <button class="info-btn" title="More Info"><i class="fas fa-circle-info"></i></button>
+              <button class="download-btn" title="Download Chart"><i class="fas fa-download"></i></button>
+            </div>
+          </div>
           <div class="dropdown-wrapper">
             <label for="mobility-filter">Filter by:</label>
             <select id="mobility-filter">
@@ -68,7 +95,6 @@
               <option value="education">Education</option>
             </select>
           </div>
-          <h3>Mobility Difficulty by Diabetes Status</h3>
           <div id="mobility-bar"></div>
         </div>
       </section>
@@ -77,5 +103,36 @@
 
   <script src="static/js/main.js"></script>
   <script src="static/js/visualization.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".info-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          alert("This chart provides insights into diabetes trends segmented by the corresponding category.");
+        });
+      });
+
+      document.querySelectorAll(".download-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const svg = btn.closest(".chart-card").querySelector("svg");
+          if (!svg) return alert("Chart not found!");
+
+          const serializer = new XMLSerializer();
+          const source = serializer.serializeToString(svg);
+          const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "chart.svg";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
+
