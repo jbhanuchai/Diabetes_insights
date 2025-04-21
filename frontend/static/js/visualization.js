@@ -676,3 +676,4 @@ diabetesTypes.forEach((type, i) => {
   .style("font-weight", "bold")
   .text(showPercentage ? "Mobility Difficulty (%)" : "Mobility Difficulty Count");
 }
+
