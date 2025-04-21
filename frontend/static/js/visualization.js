@@ -271,6 +271,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderIncomeGroupedBar();
     renderGenderPieChart();
   });
+  
+  document.getElementById("toggleScaleSwitch").addEventListener("change", (e) => {
+    showPercentage = e.target.checked;
+    document.getElementById("scaleLabel").textContent = showPercentage ? "Percentage" : "Count";
+    renderGenderEducationStackedBar();
+    renderIncomeGroupedBar();
+    renderMobilityByDiabetesBar();
+  });
 
   document.getElementById("resetFilters").addEventListener("click", () => {
     document.getElementById("gender-filter").value = "All";
