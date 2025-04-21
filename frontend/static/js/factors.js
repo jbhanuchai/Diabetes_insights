@@ -1,3 +1,6 @@
+import { updateDonutCharts } from "./donuts.js";
+
+
 const API_BASE = "http://127.0.0.1:5000";
 
 // Debounce function to limit update frequency
@@ -22,12 +25,16 @@ async function fetchScatterData() {
         console.log(`Fetched ${data.length} records. Sample:`, data.slice(0, 3));
         
         // Parse numeric fields and filter out invalid entries
-        const validData = data
-            .map(d => ({
-                BMI: +d.BMI,
-                PhysHlth: +d.PhysHlth,
-                Diabetes_012: +d.Diabetes_012
-            }))
+        const validData = data.map(d => ({
+            BMI: +d.BMI,
+            PhysHlth: +d.PhysHlth,
+            Diabetes_012: +d.Diabetes_012,
+            Smoker: +d.Smoker,
+            PhysActivity: +d.PhysActivity,
+            AnyHealthcare: +d.AnyHealthcare,
+            NoDocbcCost: +d.NoDocbcCost
+        }))
+
             .filter(d => {
                 const isValid = !isNaN(d.BMI) && !isNaN(d.PhysHlth) && !isNaN(d.Diabetes_012);
                 if (!isValid) {
@@ -47,7 +54,6 @@ async function fetchScatterData() {
         return [];
     }
 }
-
 // Initialize scatterplot
 function renderScatterplot(data) {
     const margin = { top: 20, right: 30, bottom: 50, left: 60 };
@@ -212,61 +218,58 @@ function setupBrushing(data, chart, pointSize, bmiMin, bmiMax, physMin, physMax,
         .extent([[0, 0], [width, height]])
         .on("start brush end", function(event) {
             const selection = event.selection;
-            
-            // Filter data based on slider settings
-            const filteredData = data.filter(d => 
-                d.BMI >= bmiMin && 
-                d.BMI <= bmiMax && 
-                d.PhysHlth >= physMin && 
+        
+            const filteredData = data.filter(d =>
+                d.BMI >= bmiMin &&
+                d.BMI <= bmiMax &&
+                d.PhysHlth >= physMin &&
                 d.PhysHlth <= physMax
             );
-
-            // Clear canvas
+        
+            let brushedPoints = [];
+        
             context.clearRect(0, 0, canvas.attr("width"), canvas.attr("height"));
             context.fillStyle = "white";
             context.fillRect(0, 0, canvas.attr("width"), canvas.attr("height"));
-
-            // Redraw points using precomputed jittered positions
+        
             let renderedCount = 0;
             filteredData.forEach(d => {
                 const x = xScale(d.BMI_jitter) + margin.left;
                 const y = yScale(d.PhysHlth_jitter) + margin.top;
-
-                // Skip if coordinates are invalid or out of bounds
+        
                 if (isNaN(x) || isNaN(y)) return;
                 if (x < 0 || x > canvas.attr("width") || y < 0 || y > canvas.attr("height")) return;
-
-                // Check if the point is within the brushed area
+        
                 let inBrush = true;
                 if (selection) {
                     const [[x0, y0], [x1, y1]] = selection;
-                    inBrush = x >= x0 + margin.left && x <= x1 + margin.left && y >= y0 + margin.top && y <= y1 + margin.top;
+                    inBrush = x >= x0 + margin.left && x <= x1 + margin.left &&
+                              y >= y0 + margin.top && y <= y1 + margin.top;
                 }
-                if (inBrush) {
-                    context.strokeStyle = "#333"; // stronger outline for brushed points
-                    context.lineWidth = 0.6;
-                } else {
-                    context.strokeStyle = "transparent"; // hide stroke for faded points
-                    context.lineWidth = 0;
-                }
-
+        
+                if (inBrush) brushedPoints.push(d);
+        
                 context.beginPath();
                 context.arc(x, y, pointSize / 5, 0, 2 * Math.PI);
                 context.fillStyle = colorScale(d.DiabetesLabel);
-                context.globalAlpha = (selectedCategory[0] 
+                context.globalAlpha = (selectedCategory[0]
                     ? (d.DiabetesLabel === selectedCategory[0] ? 1 : 0.3)
                     : 1) * (inBrush ? 1 : 0.05);
                 context.fill();
                 context.strokeStyle = "black";
                 context.lineWidth = 0.1;
                 context.stroke();
-
+        
                 renderedCount++;
             });
-
+        
             console.log(`Total points rendered during brushing: ${renderedCount}`);
             context.globalAlpha = 1;
+        
+            // This is the key line to update the donuts:
+            updateDonutCharts(selection ? brushedPoints : filteredData);
         });
+        
 
     // Enable moving the brush selection
     brush.on("start", function(event) {
@@ -401,6 +404,7 @@ function setupSliders(data, chart, selectedCategory) {
             physMax,
             selectedCategory
         );
+        updateDonutCharts(filteredData);
 
         // Update brushing with the filtered data using chart.svg
         chart.svg.select(".brush").remove();

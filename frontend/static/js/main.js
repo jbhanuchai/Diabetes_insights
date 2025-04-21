@@ -53,7 +53,7 @@ function uploadFile(file) {
       document.getElementById("csvFile").value = "";
       document.getElementById("reuploadFile").value = "";
 
-      // ✅ Update reupload button to show filename
+      // Update reupload button to show filename
       document.getElementById("reuploadBtn").innerText = `Reupload (${file.name})`;
 
       fetchSummaryData();
@@ -66,7 +66,7 @@ function uploadFile(file) {
 
 // Try to load dashboard if data already exists
 function loadDashboardIfAvailable() {
-  fetch(`${API_BASE}/data/summary?ts=${Date.now()}`)  // ✅ Bypass caching
+  fetch(`${API_BASE}/data/summary?ts=${Date.now()}`)
     .then(res => {
       if (!res.ok) return null;
       return res.json();
@@ -91,10 +91,10 @@ function loadDashboardIfAvailable() {
 
 // Fetch latest summary data after file upload
 function fetchSummaryData() {
-  fetch(`${API_BASE}/data/summary?ts=${Date.now()}`)  // ✅ Bypass caching
+  fetch(`${API_BASE}/data/summary?ts=${Date.now()}`) 
     .then(res => res.json())
     .then(data => {
-      console.log("Summary data after reupload:", data);  // ✅ Debug
+      console.log("Summary data after reupload:", data); 
       updateSummary(data);
     })
     .catch(err => console.error("Summary error:", err));

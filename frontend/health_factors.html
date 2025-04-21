@@ -13,6 +13,7 @@
     <style>
         /* Compact Slider Styling */
         .noUi-target {
+
             height: 8px;
             margin-top: 10px;
         }
@@ -98,10 +99,20 @@
             <section class="chart-container" id="chart-container">
                 <div class="bg-white p-4 rounded-lg shadow-md flex-1">
                     <canvas id="scatterplot" class="w-full h-auto"></canvas>
+                    <div class="donut-charts-container" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
+                        <div class="donut-chart" id="smokerChart"></div>
+                        <div class="donut-chart" id="activityChart"></div>
+                        <div class="donut-chart" id="healthcareChart"></div>
+                        <div class="donut-chart" id="docCostChart"></div>
+                      </div>
+                      <div id="patientCount" style="margin-top: 1rem; font-weight: bold; font-size: 16px;"></div>
+                      
+                    
                 </div>
             </section>
         </main>
     </div>
-    <script src="static/js/factors.js"></script>
+    <script type="module" src="static/js/donuts.js"></script>
+    <script type="module" src="static/js/factors.js"></script>    
 </body>
 </html>
