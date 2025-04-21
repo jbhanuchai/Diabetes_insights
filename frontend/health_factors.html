@@ -93,11 +93,18 @@
         <main class="content">
             <header>
                 <h1>Health Related Factors</h1>
-                <p>Explore how BMI and physical health relate to diabetes</p>
             </header>
             
             <section class="chart-container" id="chart-container">
                 <div class="bg-white p-4 rounded-lg shadow-md flex-1">
+                    <div id="kpiCards" class="summary-cards" style="margin-top: 2rem;">
+                        <div class="card" id="kpi-total">Total Patients: –</div>
+                        <div class="card" id="kpi-bmi">Avg BMI: –</div>
+                        <div class="card" id="kpi-phys">Avg PhysHlth: –</div>
+                        <div class="card" id="kpi-diabetic">Diabetic: –</div>
+                      </div>                      
+                    <br/>  
+                    <h3>Explore how BMI and physical health relate to diabetes</h3>
                     <canvas id="scatterplot" class="w-full h-auto"></canvas>
                     <div class="donut-charts-container" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
                         <div class="donut-chart" id="smokerChart"></div>
@@ -105,9 +112,6 @@
                         <div class="donut-chart" id="healthcareChart"></div>
                         <div class="donut-chart" id="docCostChart"></div>
                       </div>
-                      <div id="patientCount" style="margin-top: 1rem; font-weight: bold; font-size: 16px;"></div>
-                      
-                    
                 </div>
             </section>
         </main>

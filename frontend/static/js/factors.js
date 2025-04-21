@@ -268,6 +268,7 @@ function setupBrushing(data, chart, pointSize, bmiMin, bmiMax, physMin, physMax,
         
             // This is the key line to update the donuts:
             updateDonutCharts(selection ? brushedPoints : filteredData);
+            updateKpiCards(selection ? brushedPoints : filteredData);
         });
         
 
@@ -405,7 +406,7 @@ function setupSliders(data, chart, selectedCategory) {
             selectedCategory
         );
         updateDonutCharts(filteredData);
-
+        updateKpiCards(filteredData);
         // Update brushing with the filtered data using chart.svg
         chart.svg.select(".brush").remove();
         setupBrushing(
@@ -427,6 +428,19 @@ function setupSliders(data, chart, selectedCategory) {
 
     // Initial render
     debouncedUpdate();
+}
+
+function updateKpiCards(data) {
+    const total = data.length;
+    const avgBMI = d3.mean(data, d => d.BMI) || 0;
+    const avgPhys = d3.mean(data, d => d.PhysHlth) || 0;
+    const diabeticCount = data.filter(d => d.Diabetes_012 === 2).length;
+    const diabeticPercent = total > 0 ? ((diabeticCount / total) * 100).toFixed(2) : "0.00";
+
+    d3.select("#kpi-total").text(`Total Patients: ${total}`);
+    d3.select("#kpi-bmi").text(`Avg BMI: ${avgBMI.toFixed(2)}`);
+    d3.select("#kpi-phys").text(`Avg PhysHlth: ${avgPhys.toFixed(2)}`);
+    d3.select("#kpi-diabetic").text(`Diabetic: ${diabeticPercent}%`);
 }
 
 // Main initialization
