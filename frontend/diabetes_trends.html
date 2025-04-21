@@ -1,88 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diabetes Trends</title>
-    <link rel="stylesheet" href="static/css/style.css">
-    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <style>
-        .tooltip {
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 100;
-            border-radius: 5px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.2);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diabetes Trends</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <nav class="sidebar">
-            <div class="sidebar-title" onclick="location.href='index.html'">
-                Diabetes Insights
-              </div>                                      
-            <ul>
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="diabetes_trends.html" class="active">Diabetes Trends</a></li>
-                <li><a href="health_factors.html">Health Related Factors</a></li>
-                <li><a href="health_disparities.html">Health Disparities</a></li>
-            </ul>
-        </nav>     
+  <div class="container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div class="sidebar-title" onclick="location.href='index.html'">
+        Diabetes Insights
+      </div>
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="diabetes_trends.html" class="active">Diabetes Trends</a></li>
+        <li><a href="health_factors.html">Health Related Factors</a></li>
+        <li><a href="health_disparities.html">Health Disparities</a></li>
+      </ul>
+    </nav>
 
-        <main class="content">
-            <header>
-                <h1>Diabetes Trends</h1>
-            </header>
-            <section class="chart-container">
-                <div class="controls" style="margin-bottom: 20px;">
-                    <label for="genderSelect">Gender:</label>
-                    <select id="genderSelect">
-                        <option value="all">All</option>
-                        <option value="1">Male</option>
-                        <option value="0">Female</option>
-                    </select>
-                    <label for="ageGroupSelect">Age Group:</label>
-                    <select id="ageGroupSelect">
-                        <option value="all">All</option>
-                        <option value="18-24">18–24</option>
-                        <option value="25-29">25–29</option>
-                        <option value="30-34">30–34</option>
-                        <option value="35-39">35–39</option>
-                        <option value="40-44">40–44</option>
-                        <option value="45-49">45–49</option>
-                        <option value="50-54">50–54</option>
-                        <option value="55-59">55–59</option>
-                        <option value="60-64">60–64</option>
-                        <option value="65-69">65–69</option>
-                        <option value="70-74">70–74</option>
-                        <option value="75-79">75–79</option>
-                        <option value="80+">80+</option>
-                    </select>                
-                    <label for="diabetesTypeSelect">Diabetes Status:</label>
-                    <select id="diabetesTypeSelect">
-                        <option value="all">All</option>
-                        <option value="2">Diabetes</option>
-                        <option value="1">Pre-Diabetes</option>
-                        <option value="0">No Diabetes</option>
-                    </select>
-                
-                    <label style="margin-left: 20px;">
-                        <input type="checkbox" id="fixedYAxis" />
-                        Auto scale
-                    </label>
-                </div>                
-                <div id="line-chart"></div>
+    <!-- Main Content Area -->
+    <main class="content">
+      <header>
+        <h1>Diabetes Trends</h1>
+      </header>
 
-                <div id="bar-chart-education" style="margin-top: 40px;"></div>
-                <div id="heatmap-age-income" style="margin-top: 40px;"></div>
-            </section>            
-        </main>
-    </div>
+      <section class="chart-container">
+        <!-- Filter Controls -->
+        <div class="controls" style="margin-bottom: 20px;">
+          <label for="genderSelect">Gender:</label>
+          <select id="genderSelect">
+            <option value="all">All</option>
+            <option value="1">Male</option>
+            <option value="0">Female</option>
+          </select>
 
-    <script src="static/js/trends.js"></script>
+          <label for="ageGroupSelect">Age Group:</label>
+          <select id="ageGroupSelect">
+            <option value="all">All</option>
+            <option value="18-24">18–24</option>
+            <option value="25-29">25–29</option>
+            <option value="30-34">30–34</option>
+            <option value="35-39">35–39</option>
+            <option value="40-44">40–44</option>
+            <option value="45-49">45–49</option>
+            <option value="50-54">50–54</option>
+            <option value="55-59">55–59</option>
+            <option value="60-64">60–64</option>
+            <option value="65-69">65–69</option>
+            <option value="70-74">70–74</option>
+            <option value="75-79">75–79</option>
+            <option value="80+">80+</option>
+          </select>
+
+          <label for="diabetesTypeSelect">Diabetes Status:</label>
+          <select id="diabetesTypeSelect">
+            <option value="all">All</option>
+            <option value="2">Diabetes</option>
+            <option value="1">Pre-Diabetes</option>
+            <option value="0">No Diabetes</option>
+          </select>
+
+          <label style="margin-left: 20px;">
+            <input type="checkbox" id="fixedYAxis" />
+            Auto scale
+          </label>
+        </div>
+
+        <!-- Charts -->
+        <div id="line-chart"></div>
+        <div id="bar-chart-education" style="margin-top: 40px;"></div>
+        <div id="heatmap-age-income" style="margin-top: 40px;"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="static/js/trends.js"></script>
 </body>
 </html>

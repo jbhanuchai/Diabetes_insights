@@ -120,20 +120,18 @@ async function renderLineChart() {
     const line = d3.line()
         .x(d => x(d.age_group))
         .y(d => y(d.percentage));
-
-    const tooltip = d3.select("#line-chart")
+        
+    let tooltip = d3.select("body").select(".tooltip");
+    if (tooltip.empty()) {
+    tooltip = d3.select("body")
         .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
-        .style("position", "absolute")
-        .style("background-color", "white")
-        .style("padding", "6px")
-        .style("border", "1px solid #ccc")
-        .style("border-radius", "4px")
-        .style("pointer-events", "none");
+        .attr("class", "tooltip");
+    }
+
 
     datasets.forEach(({ status, data }) => {
         const color = statusColors[status];
+        data.forEach(d => d.status = status);
         if (selectedAge === "all") {
             const path = svg.append("path")
                 .datum(data)
@@ -161,17 +159,25 @@ async function renderLineChart() {
             .attr("r", 0)
             .attr("fill", color)
             .on("mouseover", function (event, d) {
-                tooltip.style("opacity", 1)
-                    .html(`<strong>${d.age_group}</strong><br/>
-                           Status: ${statusLabels[status]}<br/>
-                           Diabetes: ${d.percentage}%<br/>
-                           Count: ${d.count}`)
-                    .style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 28) + "px");
+                tooltip
+                  .style("opacity", 1)
+                  .html(`
+                    <strong>Age Group:</strong> ${d.age_group}<br/>
+                    <strong>Status:</strong> ${statusLabels[d.status]}<br/>
+                    <strong>Diabetes:</strong> ${d.percentage}%<br/>
+                    <strong>Count:</strong> ${d.count}
+                  `)
+                  .style("left", `${event.pageX + 12}px`)
+                  .style("top", `${event.pageY - 28}px`);
             })
-            .on("mouseout", function () {
+            .on("mousemove", (event) => {
+                tooltip
+                  .style("left", `${event.pageX + 12}px`)
+                  .style("top", `${event.pageY - 28}px`);
+            })
+            .on("mouseout", () => {
                 tooltip.style("opacity", 0);
-            })
+            })                          
             .transition()
             .duration(800)
             .attr("r", 5);
@@ -245,16 +251,13 @@ async function renderGroupedBarChart() {
     .duration(800)
     .call(d3.axisLeft(y));
 
-    const tooltip = d3.select(svgId)
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
-        .style("position", "absolute")
-        .style("background-color", "white")
-        .style("padding", "6px")
-        .style("border", "1px solid #ccc")
-        .style("border-radius", "4px")
-        .style("pointer-events", "none");
+    let tooltip = d3.select("body").select(".tooltip");
+    if (tooltip.empty()) {
+        tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip");
+    }
+
     svg.append("g")
         .selectAll("g")
         .data(d3.group(data, d => d.education))
@@ -418,18 +421,12 @@ function renderHeatmapAgeIncome(data, svgId) {
         .style("opacity", 1);
 
     // Tooltip
-    const tooltip = d3.select(svgId)
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
-        .style("position", "absolute")
-        .style("background-color", "white")
-        .style("padding", "6px 10px")
-        .style("border", "1px solid #ccc")
-        .style("border-radius", "4px")
-        .style("font-size", "13px")
-        .style("pointer-events", "none")
-        .style("box-shadow", "0 0 6px rgba(0,0,0,0.15)");
+    let tooltip = d3.select("body").select(".tooltip");
+    if (tooltip.empty()) {
+        tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip");
+    }
 
     // Cells
     svg.selectAll("rect")

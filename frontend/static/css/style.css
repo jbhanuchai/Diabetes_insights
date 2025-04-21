@@ -259,43 +259,7 @@ body {
     }
 }
 
-/* Dark mode overrides */
-body.dark-mode {
-    background-color: #121212;
-    color: #e0e0e0;
-}
-
-body.dark-mode .content {
-    background-color: #121212;
-    color: #e0e0e0;
-}
-
-body.dark-mode .sidebar {
-    background-color: #0d1b2a;
-}
-
-body.dark-mode .sidebar ul li a {
-    background: #1a2d4a;
-}
-
-body.dark-mode .sidebar ul li a:hover,
-body.dark-mode .sidebar ul li a.active {
-    background: #f25c54;
-}
-
-body.dark-mode .chart-container text,
-body.dark-mode .tooltip {
-    fill: #e0e0e0;
-    color: #fff;
-}
-
-body.dark-mode .tooltip {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #000;
-    border: 1px solid #444;
-  }
-
-  .tooltip {
+.tooltip {
     position: absolute;
     background-color: rgba(255, 255, 0, 0.95);
     color: #000;
@@ -310,9 +274,9 @@ body.dark-mode .tooltip {
     transition: opacity 0.2s ease;
     z-index: 10000;
     max-width: 260px;
-    white-space: normal; /* ← ALLOW WRAPPING */
-    word-wrap: break-word; /* ← PREVENT TEXT OVERFLOW */
-}
+    white-space: normal;
+    word-wrap: break-word;
+  }  
 
 .container, .chart-container {
     overflow: visible;
