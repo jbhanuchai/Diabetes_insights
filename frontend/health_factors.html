@@ -11,19 +11,6 @@
     <link rel="stylesheet" href="static/css/style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
-            pointer-events: none;
-            font-size: 12px;
-        }
-        .slider-container { margin: 10px 0; }
-        .slider-label { font-size: 14px; color: #4a5568; }
-    </style>
-    <style>
         /* Compact Slider Styling */
         .noUi-target {
             height: 8px;
@@ -107,7 +94,7 @@
                 <h1>Health Related Factors</h1>
                 <p>Explore how BMI and physical health relate to diabetes</p>
             </header>
-        
+            
             <section class="chart-container" id="chart-container">
                 <div class="bg-white p-4 rounded-lg shadow-md flex-1">
                     <canvas id="scatterplot" class="w-full h-auto"></canvas>

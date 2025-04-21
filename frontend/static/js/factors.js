@@ -242,13 +242,20 @@ function setupBrushing(data, chart, pointSize, bmiMin, bmiMax, physMin, physMax,
                     const [[x0, y0], [x1, y1]] = selection;
                     inBrush = x >= x0 + margin.left && x <= x1 + margin.left && y >= y0 + margin.top && y <= y1 + margin.top;
                 }
+                if (inBrush) {
+                    context.strokeStyle = "#333"; // stronger outline for brushed points
+                    context.lineWidth = 0.6;
+                } else {
+                    context.strokeStyle = "transparent"; // hide stroke for faded points
+                    context.lineWidth = 0;
+                }
 
                 context.beginPath();
                 context.arc(x, y, pointSize / 5, 0, 2 * Math.PI);
                 context.fillStyle = colorScale(d.DiabetesLabel);
                 context.globalAlpha = (selectedCategory[0] 
                     ? (d.DiabetesLabel === selectedCategory[0] ? 1 : 0.3)
-                    : 1) * (inBrush ? 1 : 0.3);
+                    : 1) * (inBrush ? 1 : 0.05);
                 context.fill();
                 context.strokeStyle = "black";
                 context.lineWidth = 0.1;
