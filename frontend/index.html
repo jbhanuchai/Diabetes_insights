@@ -24,54 +24,45 @@
             <header>
                 <h1 class="dashboard-title">Diabetes Insights Dashboard</h1>
             </header>
+            <!-- Initial Upload (centered) -->
+            <div id="upload-container" style="text-align:center; margin-top: 1rem;">
+                <h3>Please upload your dataset to enable the dashboard:</h3>
+                <input type="file" id="csvFile" accept=".csv">
+            </div>
             
-            <!-- Filter Buttons -->
-            <div class="filters">
+            <!-- Top-right Reupload UI (hidden initially) -->
+            <div id="reupload-container" style="display:none; position: absolute; top: 10px; right: 20px;">
+                <input type="file" id="reuploadFile" accept=".csv" style="display: none;">
+                <button id="reuploadBtn">Reupload</button>
+            </div>
+    
+             <!-- DASHBOARD: Only shown after upload -->
+            <div id="dashboard-container" style="display: none;">
+                <!-- Filter Buttons -->
+                <div class="filters">
                 <button class="filter-btn age" onclick="showFilter('age')">Age</button>
                 <button class="filter-btn gender" onclick="showFilter('sex')">Gender</button>
                 <button class="filter-btn education" onclick="showFilter('education')">Education</button>
-            </div>            
-
-            <!-- Filter Options -->
-            <div id="filter-options">
-                <div id="age-filters" class="filter-group">
-                    <label><input type="checkbox" value="18-24"> 18-24</label>
-                    <label><input type="checkbox" value="25-29"> 25-29</label>
-                    <label><input type="checkbox" value="30-34"> 30-34</label>
-                    <label><input type="checkbox" value="35-39"> 35-39</label>
-                    <label><input type="checkbox" value="40-44"> 40-44</label>
-                    <label><input type="checkbox" value="45-49"> 45-49</label>
-                    <label><input type="checkbox" value="50-54"> 50-54</label>
-                    <label><input type="checkbox" value="55-59"> 55-59</label>
-                    <label><input type="checkbox" value="60-64"> 60-64</label>
-                    <label><input type="checkbox" value="65-69"> 65-69</label>
-                    <label><input type="checkbox" value="70-74"> 70-74</label>
-                    <label><input type="checkbox" value="75-79"> 75-79</label>
-                    <label><input type="checkbox" value="80+"> 80+</label>
-                </div>                
-                <div id="sex-filters" class="filter-group">
-                    <label><input type="checkbox" value="1"> Male</label>
-                    <label><input type="checkbox" value="0"> Female</label>
                 </div>
-                <div id="education-filters" class="filter-group">
-                    <label><input type="checkbox" value="No Education"> No Education</label>
-                    <label><input type="checkbox" value="Elementary School"> Elementary School</label>
-                    <label><input type="checkbox" value="High School"> High School</label>
-                    <label><input type="checkbox" value="College"> College</label>
-                    <label><input type="checkbox" value="Under Graduate"> Under Graduate</label>
-                    <label><input type="checkbox" value="Post Graduate"> Post Graduate</label>
-                </div>                               
-            </div>
 
-            <!-- Summary Cards -->
-            <section class="summary-cards">
+                <!-- Filter Options -->
+                <div id="filter-options">
+                <div id="age-filters" class="filter-group">...</div>
+                <div id="sex-filters" class="filter-group">...</div>
+                <div id="education-filters" class="filter-group">...</div>
+                </div>
+
+                <!-- Summary Cards -->
+                <section class="summary-cards">
                 <div class="card">
                     <p>Total Diabetes Cases: <span id="totalCasesCount" class="count">0</span></p>
-                </div>                
+                </div>
                 <div class="card" id="highestAgeGroupCard">
                     <p>Highest Affected Age Group: <span id="highestAgeGroup">Loading...</span></p>
-                </div>                
-            </section>
+                </div>
+                </section>
+            </div>
+            </main>
         </main>
     </div>
 

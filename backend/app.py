@@ -2,16 +2,44 @@ from flask import Flask, jsonify, request
 import pandas as pd
 from flask_cors import CORS
 from flask_cors import cross_origin
+import os
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins="*")
 
 # Load dataset (Make sure this path is correct)
 DATA_PATH = "../data/diabetes_cleaned.csv"
-df = pd.read_csv(DATA_PATH)
+df = None
+
+UPLOAD_FOLDER = "data"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# Ensure upload folder exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    global df
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Empty filename'}), 400
+
+    # Save to fixed path (overwrite always)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'uploaded.csv')
+    file.save(filepath)
+
+    # Load into DataFrame
+    df = pd.read_csv(filepath)
+    print("New file uploaded. DataFrame shape:", df.shape)
+    return jsonify({'message': 'File uploaded and loaded successfully!'})
 
 @app.route("/")
 def home():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     return jsonify({"message": "Diabetes Insights API is running!"})
 
 # Mapping Age 1-13 to actual age groups
@@ -53,6 +81,13 @@ INCOME_LEVELS = {
 
 @app.route("/data/summary")
 def get_summary():
+    global df
+    if df is None:
+        return jsonify({
+            "total_cases": None,
+            "highest_age_group": None,
+            "top_risk_factor": None
+        }), 200
     total_cases = df["Diabetes_012"].count()
     highest_age_group_num = df["Age"].value_counts().idxmax()  # Most common age group (1-13)
     highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")  # Convert to readable format
@@ -67,12 +102,17 @@ def get_summary():
 
 @app.route("/data/sample")
 def get_sample_data():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     sample_data = df[["Age", "BMI"]].head(10).to_dict(orient="records")
     return jsonify(sample_data)
 
 # Update the /data/filter endpoint
 @app.route("/data/filter", methods=["POST"])
 def get_cases_by_filters():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
     data = request.json
     age_groups = data.get("age_groups", [])
     genders = data.get("genders", [])
@@ -101,6 +141,9 @@ def get_cases_by_filters():
 
 @app.route("/data/education_gender_diabetes")
 def education_gender_diabetes():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     # Filter for diabetic only
     diabetic_df = df[df["Diabetes_012"] == 2]
 
@@ -136,6 +179,9 @@ def education_gender_diabetes():
 
 @app.route("/data/income_diabetes")
 def income_diabetes():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     gender_filter = request.args.get("gender", "All")
 
     diabetes_labels = {
@@ -176,6 +222,8 @@ def income_diabetes():
 
 @app.route("/data/gender_split_diabetic")
 def gender_split_diabetic():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
     diabetic_df = df[df["Diabetes_012"] == 2]
 
     gender_counts = diabetic_df["Sex"].value_counts().to_dict()
@@ -197,6 +245,9 @@ def gender_split_diabetic():
 
 @app.route("/data/mobility_by_diabetes")
 def mobility_by_diabetes():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     filter_type = request.args.get("filter", "income")  # income or education
     if filter_type not in ["income", "education"]:
         return jsonify([])
@@ -227,6 +278,9 @@ def mobility_by_diabetes():
 
 @app.route("/data/diabetes_by_age_group", methods=["POST"])
 def diabetes_by_age_group():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     data = request.json
     genders = data.get("genders", [])
     educations = data.get("educations", [])
@@ -255,6 +309,9 @@ def diabetes_by_age_group():
 
 @app.route("/data/diabetes_by_education", methods=["POST"])
 def diabetes_by_education():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     data = request.json
     genders = data.get("genders", [])
     ages = data.get("ages", [])
@@ -289,6 +346,9 @@ def diabetes_by_education():
 
 @app.route("/data/heatmap_age_income", methods=["POST"])
 def heatmap_age_income():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+
     data = request.json
     genders = data.get("genders", [])
     educations = data.get("educations", [])
@@ -334,5 +394,17 @@ def heatmap_age_income():
 
     return jsonify(result)
 
+@app.route("/data/scatter")
+def get_scatter_data():
+    if df is None:
+        return jsonify({"error": "Dataset not loaded"}), 400
+    try:
+        # Return full dataset
+        scatter_data = df[["BMI", "PhysHlth", "Diabetes_012","Smoker", 
+                           "PhysActivity", "AnyHealthcare", "NoDocbcCost"]].to_dict(orient="records")
+        return jsonify(scatter_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)

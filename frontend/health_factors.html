@@ -1,35 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- noUiSlider CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Related Factors</title>
     <link rel="stylesheet" href="static/css/style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* Compact Slider Styling */
+        .noUi-target {
+
+            height: 8px;
+            margin-top: 10px;
+        }
+      
+        .noUi-connect {
+            background: #2ebaae;
+        }
+      
+        .noUi-horizontal .noUi-handle {
+            width: 14px;
+            height: 14px;
+            top: -4px;
+            border-radius: 3px;
+            background: white;
+            border: 2px solid #2ebaae;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+      
+        .noUi-horizontal .noUi-handle:hover {
+            box-shadow: 0 0 5px rgba(46, 186, 174, 0.6);
+        }
+      
+        .noUi-base {
+            border-radius: 5px;
+            background-color: #eee;
+        }
+      
+        .slider-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+      
+        .slider-container {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <nav class="sidebar">
-            <div class="sidebar-title" onclick="location.href='index.html'">
-                Diabetes Insights
-              </div>              
+            <h2>Diabetes Insights</h2>
             <ul>
                 <li><a href="index.html">Overview</a></li>
                 <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
                 <li><a href="health_factors.html" class="active">Health Related Factors</a></li>
                 <li><a href="health_disparities.html">Health Disparities</a></li>
-            </ul>            
+            </ul>
+        
+            <!-- Chart Settings inside Sidebar -->
+            <div class="mt-6 text-white text-sm">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Chart Settings</h3>
+        
+                <div class="slider-container">
+                    <label class="slider-label text-white">Point Size</label>
+                    <input type="range" id="pointSize" min="5" max="100" value="25" step="5" class="w-full">
+                    <span id="pointSizeValue" class="text-xs">25</span>
+                </div>
+        
+                <div class="slider-container">
+                    <label class="slider-label text-white">BMI Range</label>
+                    <div id="bmiRangeSlider"></div>
+                    <span id="bmiRangeValue" class="text-xs">[0, 100]</span>
+                </div>
+        
+                <div class="slider-container">
+                    <label class="slider-label text-white">Physically Unhealthy Days</label>
+                    <div id="physRangeSlider"></div>
+                    <span id="physRangeValue" class="text-xs">[0, 30]</span>
+                </div>
+            </div>
         </nav>
 
         <main class="content">
             <header>
                 <h1>Health Related Factors</h1>
             </header>
-
-            <section class="chart-container" id="chart-container"></section>
-
+            
+            <section class="chart-container" id="chart-container">
+                <div class="bg-white p-4 rounded-lg shadow-md flex-1">
+                    <div id="kpiCards" class="summary-cards" style="margin-top: 2rem;">
+                        <div class="card" id="kpi-total">Total Patients: –</div>
+                        <div class="card" id="kpi-bmi">Avg BMI: –</div>
+                        <div class="card" id="kpi-phys">Avg PhysHlth: –</div>
+                        <div class="card" id="kpi-diabetic">Diabetic: –</div>
+                      </div>                      
+                    <br/>  
+                    <h3>Explore how BMI and physical health relate to diabetes</h3>
+                    <canvas id="scatterplot" class="w-full h-auto"></canvas>
+                    <div class="donut-charts-container" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
+                        <div class="donut-chart" id="smokerChart"></div>
+                        <div class="donut-chart" id="activityChart"></div>
+                        <div class="donut-chart" id="healthcareChart"></div>
+                        <div class="donut-chart" id="docCostChart"></div>
+                      </div>
+                </div>
+            </section>
         </main>
     </div>
-    <script src="static/js/factors.js"></script>
+    <script type="module" src="static/js/donuts.js"></script>
+    <script type="module" src="static/js/factors.js"></script>    
 </body>
 </html>
