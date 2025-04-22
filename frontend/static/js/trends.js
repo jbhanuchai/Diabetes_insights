@@ -262,12 +262,16 @@ async function renderGroupedBarChart() {
     .attr("transform", `translate(0, ${height})`);
 
     xAxisGroup.transition()
-    .duration(800)
-    .call(d3.axisBottom(x0))
-    .selection()
-    .selectAll("text")
-    .style("font-size", "12px")
-    .style("text-anchor", "middle");
+  .duration(800)
+  .call(d3.axisBottom(x0))
+  .selection()
+  .selectAll("text")
+  .style("font-size", "12px")
+  .style("text-anchor", "end")
+  .attr("transform", "rotate(-30)")
+  .attr("dx", "-0.5em")
+  .attr("dy", "0.25em");
+
     const yAxisGroup = svg.append("g")
     .attr("class", "y-axis");
 
