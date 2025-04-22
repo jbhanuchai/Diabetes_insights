@@ -400,7 +400,7 @@ def get_scatter_data():
         return jsonify({"error": "Dataset not loaded"}), 400
     try:
         # Return full dataset
-        scatter_data = df[["BMI", "PhysHlth", "Diabetes_012","Smoker", 
+        scatter_data = df[["Age", "BMI", "PhysHlth", "Diabetes_012","Smoker", 
                            "PhysActivity", "AnyHealthcare", "NoDocbcCost"]].to_dict(orient="records")
         return jsonify(scatter_data)
     except Exception as e:

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Diabetes Trends</title>
+  <title>Demographic Analysis</title>
   <link rel="stylesheet" href="static/css/style.css" />
   <link rel="icon" type="image/x-icon" href="static/images/favicon.ico" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,65 +17,83 @@
         Diabetes Insights
       </div>
       <ul>
-        <li><a href="index.html">Overview</a></li>
-        <li><a href="diabetes_trends.html" class="active">Diabetes Trends</a></li>
-        <li><a href="health_factors.html">Health Related Factors</a></li>
-        <li><a href="health_disparities.html">Health Disparities</a></li>
+        <li><a href="index.html">Diabetes Overview</a></li>
+        <li><a href="diabetes_trends.html" class="active">Demographic Analysis</a></li>
+        <li><a href="health_factors.html">Risk Factor Exploration</a></li>
+        <li><a href="health_disparities.html">Social Gradient</a></li>
       </ul>
     </nav>
 
     <!-- Main Content Area -->
     <main class="content">
       <header>
-        <h1>Diabetes Trends</h1>
+        <h1>Demographic Analysis</h1>
       </header>
 
       <section class="chart-container">
         <!-- Filter Controls -->
-        <div class="controls" style="margin-bottom: 20px;">
-          <label for="genderSelect">Gender:</label>
-          <select id="genderSelect">
-            <option value="all">All</option>
-            <option value="1">Male</option>
-            <option value="0">Female</option>
-          </select>
-
-          <label for="ageGroupSelect">Age Group:</label>
-          <select id="ageGroupSelect">
-            <option value="all">All</option>
-            <option value="18-24">18–24</option>
-            <option value="25-29">25–29</option>
-            <option value="30-34">30–34</option>
-            <option value="35-39">35–39</option>
-            <option value="40-44">40–44</option>
-            <option value="45-49">45–49</option>
-            <option value="50-54">50–54</option>
-            <option value="55-59">55–59</option>
-            <option value="60-64">60–64</option>
-            <option value="65-69">65–69</option>
-            <option value="70-74">70–74</option>
-            <option value="75-79">75–79</option>
-            <option value="80+">80+</option>
-          </select>
-
-          <label for="diabetesTypeSelect">Diabetes Status:</label>
-          <select id="diabetesTypeSelect">
-            <option value="all">All</option>
-            <option value="2">Diabetes</option>
-            <option value="1">Pre-Diabetes</option>
-            <option value="0">No Diabetes</option>
-          </select>
-
-          <label style="margin-left: 20px;">
+        <div class="dashboard-filters">
+          <div class="dropdown-wrapper">
+            <label for="genderSelect" class="bold-label">Gender:</label>
+            <select id="genderSelect">
+              <option value="all">All</option>
+              <option value="1">Male</option>
+              <option value="0">Female</option>
+            </select>
+          </div>
+        
+          <div class="dropdown-wrapper">
+            <label for="ageGroupSelect" class="bold-label">Age Group:</label>
+            <select id="ageGroupSelect">
+              <option value="all">All</option>
+              <option value="18-24">18–24</option>
+              <option value="25-29">25–29</option>
+              <option value="30-34">30–34</option>
+              <option value="35-39">35–39</option>
+              <option value="40-44">40–44</option>
+              <option value="45-49">45–49</option>
+              <option value="50-54">50–54</option>
+              <option value="55-59">55–59</option>
+              <option value="60-64">60–64</option>
+              <option value="65-69">65–69</option>
+              <option value="70-74">70–74</option>
+              <option value="75-79">75–79</option>
+              <option value="80+">80+</option>
+            </select>
+          </div>
+        
+          <div class="dropdown-wrapper">
+            <label for="diabetesTypeSelect" class="bold-label">Diabetes Status:</label>
+            <select id="diabetesTypeSelect">
+              <option value="all">All</option>
+              <option value="2">Diabetes</option>
+              <option value="1">Pre-Diabetes</option>
+              <option value="0">No Diabetes</option>
+            </select>
+          </div>
+        
+          <div class="dropdown-wrapper" style="margin-left: 20px;">
+            <label for="fixedYAxis">Auto scale</label>
             <input type="checkbox" id="fixedYAxis" />
-            Auto scale
-          </label>
+          </div>
         </div>
+        
 
         <!-- Charts -->
-        <div id="line-chart"></div>
-        <div id="bar-chart-education" style="margin-top: 40px;"></div>
-        <div id="heatmap-age-income" style="margin-top: 40px;"></div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h2>Diabetes Trends by Age Group</h2>
+            <div id="line-chart"></div>
+          </div>
+          <div class="chart-card">
+            <h2>Diabetes Prevelence Across Educational Background</h2>
+            <div id="bar-chart-education"></div>
+          </div>
+          <div class="chart-card" id="heatmap-age-income">
+            <h2>Diabetes Distribution Grid</h2>
+            <div id="heatmap-inner"></div>
+          </div>
+        </div>
       </section>
     </main>
   </div>

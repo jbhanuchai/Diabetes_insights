@@ -61,9 +61,9 @@ async function renderLineChart() {
 
     d3.select("#line-chart").selectAll("*").remove();
 
-    const margin = { top: 30, right: 30, bottom: 60, left: 60 };
+    const margin = { top: 30, right: 125, bottom: 70, left: 60 };
     const width = 700 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const height = 425 - margin.top - margin.bottom;
 
     const svg = d3.select("#line-chart")
         .append("svg")
@@ -182,6 +182,30 @@ async function renderLineChart() {
             .duration(800)
             .attr("r", 5);
     });
+    // Legend
+    const legendGroup = svg.append("g")
+    .attr("class", "legend-group")
+    .attr("transform", `translate(${width + 20}, 20)`);
+
+    // Filter legend entries based on dropdown selection
+    const legendKeys = diabetesStatus === "all" ? [0, 1, 2] : [+diabetesStatus];
+
+    legendKeys.forEach((key, i) => {
+    legendGroup.append("rect")
+        .attr("x", 0)
+        .attr("y", i * 25)
+        .attr("width", 18)
+        .attr("height", 18)
+        .attr("fill", statusColors[key]);
+
+    legendGroup.append("text")
+        .attr("x", 24)
+        .attr("y", i * 25 + 14)
+        .text(statusLabels[key])
+        .style("font-size", "12px")
+        .attr("alignment-baseline", "middle");
+    });
+
 }
 
 async function renderGroupedBarChart() {
@@ -206,9 +230,9 @@ async function renderGroupedBarChart() {
     const svgId = "#bar-chart-education";
     d3.select(svgId).selectAll("*").remove();
 
-    const margin = { top: 30, right: 30, bottom: 70, left: 60 };
+    const margin = { top: 40, right: 130, bottom: 120, left: 60 };
     const width = 700 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const height = 425 - margin.top - margin.bottom;
 
     const svg = d3.select(svgId)
         .append("svg")
@@ -238,12 +262,16 @@ async function renderGroupedBarChart() {
     .attr("transform", `translate(0, ${height})`);
 
     xAxisGroup.transition()
-    .duration(800)
-    .call(d3.axisBottom(x0))
-    .selection()
-    .selectAll("text")
-    .style("font-size", "12px")
-    .style("text-anchor", "middle");
+  .duration(800)
+  .call(d3.axisBottom(x0))
+  .selection()
+  .selectAll("text")
+  .style("font-size", "12px")
+  .style("text-anchor", "end")
+  .attr("transform", "rotate(-30)")
+  .attr("dx", "-0.5em")
+  .attr("dy", "0.25em");
+
     const yAxisGroup = svg.append("g")
     .attr("class", "y-axis");
 
@@ -287,14 +315,14 @@ async function renderGroupedBarChart() {
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height + 60)
+        .attr("y", height + 85)
         .style("font-size", "14px")
         .style("font-weight", "bold")
         .style("opacity", 0)
         .text("Education Level")
         .transition()
         .duration(750)
-        .attr("y", height + 45)
+        .attr("y", height + 90)
         .style("opacity", 1);
     svg.append("text")
         .attr("text-anchor", "middle")
@@ -309,6 +337,30 @@ async function renderGroupedBarChart() {
         .duration(750)
         .attr("y", -40)
         .style("opacity", 1);
+
+        const legendGroup = svg.append("g")
+        .attr("class", "legend-group")
+        .attr("transform", `translate(${width + 30}, 20)`);  // Right of chart
+    
+    // Filter legend based on dropdown
+    const legendKeys = diabetesStatus === "all" ? [0, 1, 2] : [parseInt(diabetesStatus)];
+    
+    legendKeys.forEach((key, i) => {
+        legendGroup.append("rect")
+            .attr("x", 0)
+            .attr("y", i * 25)
+            .attr("width", 18)
+            .attr("height", 18)
+            .attr("fill", statusColors[key]);
+    
+        legendGroup.append("text")
+            .attr("x", 24)
+            .attr("y", i * 25 + 14)
+            .text(statusLabels[key])
+            .style("font-size", "12px")
+            .attr("alignment-baseline", "middle");
+    });
+    
 }
 
 async function fetchHeatmapAgeIncome() {
@@ -334,12 +386,13 @@ async function fetchHeatmapAgeIncome() {
     renderHeatmapAgeIncome(data, "#heatmap-age-income");
 }
 
-function renderHeatmapAgeIncome(data, svgId) {
+function renderHeatmapAgeIncome(data, containerId) {
+    const svgId = `${containerId} #heatmap-inner`;
     d3.select(svgId).selectAll("*").remove();
 
-    const margin = { top: 50, right: 30, bottom: 60, left: 80 };
+    const margin = { top: 50, right: 30, bottom: 100, left: 80 };
     const width = 700 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const height = 425 - margin.top - margin.bottom;
 
     const svg = d3.select(svgId)
         .append("svg")
@@ -395,7 +448,7 @@ function renderHeatmapAgeIncome(data, svgId) {
     // Animated axis labels
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", height + 65)
+        .attr("y", height + 85)
         .attr("text-anchor", "middle")
         .style("font-size", "14px")
         .style("font-weight", "bold")
@@ -403,7 +456,7 @@ function renderHeatmapAgeIncome(data, svgId) {
         .text("Income Level")
         .transition()
         .duration(700)
-        .attr("y", height + 45)
+        .attr("y", height + 90)
         .style("opacity", 1);
 
     svg.append("text")
