@@ -63,7 +63,7 @@ async function renderLineChart() {
 
     const margin = { top: 30, right: 125, bottom: 70, left: 60 };
     const width = 700 - margin.left - margin.right;
-    const height = 450 - margin.top - margin.bottom;
+    const height = 425 - margin.top - margin.bottom;
 
     const svg = d3.select("#line-chart")
         .append("svg")
@@ -182,17 +182,21 @@ async function renderLineChart() {
             .duration(800)
             .attr("r", 5);
     });
+    // Legend
     const legendGroup = svg.append("g")
     .attr("class", "legend-group")
     .attr("transform", `translate(${width + 20}, 20)`);
 
-    Object.entries(statusColors).forEach(([key, color], i) => {
+    // Filter legend entries based on dropdown selection
+    const legendKeys = diabetesStatus === "all" ? [0, 1, 2] : [+diabetesStatus];
+
+    legendKeys.forEach((key, i) => {
     legendGroup.append("rect")
         .attr("x", 0)
         .attr("y", i * 25)
         .attr("width", 18)
         .attr("height", 18)
-        .attr("fill", color);
+        .attr("fill", statusColors[key]);
 
     legendGroup.append("text")
         .attr("x", 24)
@@ -201,6 +205,7 @@ async function renderLineChart() {
         .style("font-size", "12px")
         .attr("alignment-baseline", "middle");
     });
+
 }
 
 async function renderGroupedBarChart() {
@@ -227,7 +232,7 @@ async function renderGroupedBarChart() {
 
     const margin = { top: 30, right: 130, bottom: 70, left: 60 };
     const width = 700 - margin.left - margin.right;
-    const height = 450 - margin.top - margin.bottom;
+    const height = 425 - margin.top - margin.bottom;
 
     const svg = d3.select(svgId)
         .append("svg")
@@ -332,22 +337,26 @@ async function renderGroupedBarChart() {
         const legendGroup = svg.append("g")
         .attr("class", "legend-group")
         .attr("transform", `translate(${width + 30}, 20)`);  // Right of chart
-      
-      Object.entries(statusColors).forEach(([key, color], i) => {
+    
+    // Filter legend based on dropdown
+    const legendKeys = diabetesStatus === "all" ? [0, 1, 2] : [parseInt(diabetesStatus)];
+    
+    legendKeys.forEach((key, i) => {
         legendGroup.append("rect")
-          .attr("x", 0)
-          .attr("y", i * 25)
-          .attr("width", 18)
-          .attr("height", 18)
-          .attr("fill", color);
-      
+            .attr("x", 0)
+            .attr("y", i * 25)
+            .attr("width", 18)
+            .attr("height", 18)
+            .attr("fill", statusColors[key]);
+    
         legendGroup.append("text")
-          .attr("x", 24)
-          .attr("y", i * 25 + 14)
-          .text(statusLabels[key])
-          .style("font-size", "12px")
-          .attr("alignment-baseline", "middle");
-      });
+            .attr("x", 24)
+            .attr("y", i * 25 + 14)
+            .text(statusLabels[key])
+            .style("font-size", "12px")
+            .attr("alignment-baseline", "middle");
+    });
+    
 }
 
 async function fetchHeatmapAgeIncome() {
@@ -373,12 +382,13 @@ async function fetchHeatmapAgeIncome() {
     renderHeatmapAgeIncome(data, "#heatmap-age-income");
 }
 
-function renderHeatmapAgeIncome(data, svgId) {
+function renderHeatmapAgeIncome(data, containerId) {
+    const svgId = `${containerId} #heatmap-inner`;
     d3.select(svgId).selectAll("*").remove();
 
     const margin = { top: 50, right: 30, bottom: 100, left: 80 };
     const width = 700 - margin.left - margin.right;
-    const height = 450 - margin.top - margin.bottom;
+    const height = 425 - margin.top - margin.bottom;
 
     const svg = d3.select(svgId)
         .append("svg")

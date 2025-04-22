@@ -7,7 +7,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Related Factors</title>
+    <title>Risk Factor Exploration</title>
     <link rel="stylesheet" href="static/css/style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
@@ -58,12 +58,14 @@
 <body>
     <div class="container">
         <nav class="sidebar">
-            <h2>Diabetes Insights</h2>
+            <div class="sidebar-title" onclick="location.href='index.html'">
+                Diabetes Insights
+              </div> 
             <ul>
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="diabetes_trends.html">Diabetes Trends</a></li>
-                <li><a href="health_factors.html" class="active">Health Related Factors</a></li>
-                <li><a href="health_disparities.html">Health Disparities</a></li>
+                <li><a href="index.html">Diabetes Overview</a></li>
+                <li><a href="diabetes_trends.html">Demographic Analysis</a></li>
+                <li><a href="health_factors.html" class="active">Risk Factor Exploration</a></li>
+                <li><a href="health_disparities.html">Social Gradient</a></li>
             </ul>
         
             <!-- Chart Settings inside Sidebar -->
@@ -92,7 +94,7 @@
 
         <main class="content">
             <header>
-                <h1>Health Related Factors</h1>
+                <h1>Risk Factor Exploration</h1>
             </header>
             
             <section class="chart-container" id="chart-container">
