@@ -104,6 +104,39 @@ function fetchSummaryData() {
 function updateSummary(data) {
   document.getElementById("totalCasesCount").innerText = data.total_cases;
   document.getElementById("highestAgeGroup").innerText = data.highest_age_group;
+  const malePercent = data.gender_male;
+  const femalePercent = data.gender_female;
+
+  document.getElementById("maleBar").style.width = `${malePercent}%`;
+  document.getElementById("femaleBar").style.width = `${femalePercent}%`;
+
+  document.getElementById("maleLabel").innerText = `${malePercent}% Male`;
+  document.getElementById("femaleLabel").innerText = `${femalePercent}% Female`;
+
+  // High BP Chart + Percentage
+  document.getElementById("bpPercentText").innerText = `${data.bp_rate}%`;
+
+  const ctx = document.getElementById('bpDonutChart').getContext('2d');
+  if (window.bpChartInstance) window.bpChartInstance.destroy();
+
+  window.bpChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+          labels: ['High BP', 'Normal'],
+          datasets: [{
+              data: [data.bp_rate, 100 - data.bp_rate],
+              backgroundColor: ['#28c76f', '#e0e0e0'],
+              borderWidth: 0
+          }]
+      },
+      options: {
+          cutout: '25%',
+          plugins: {
+              legend: { display: false },
+              tooltip: { enabled: false }
+          }
+      }
+  });
 }
 
 // Reset back to upload view (optional step before reupload)
@@ -112,3 +145,21 @@ function resetDashboard() {
   document.getElementById("upload-container").style.display = "block";
   document.getElementById("csvFile").style.display = "block";
 }
+function animateCounter(id, target) {
+  let current = 0;
+  const duration = 1200;
+  const stepTime = Math.abs(Math.floor(duration / target));
+  const counter = document.getElementById(id);
+
+  const timer = setInterval(() => {
+    current += Math.ceil(target / (duration / stepTime));
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    counter.innerText = current.toLocaleString();
+  }, stepTime);
+}
+
+// Call this after data is fetched
+animateCounter("totalCasesCount", data.total_cases);

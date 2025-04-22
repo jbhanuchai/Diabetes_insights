@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diabetes Insights Dashboard</title>
     <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -22,7 +23,8 @@
 
         <main class="content">
             <header>
-                <h1 class="dashboard-title">Diabetes Insights Dashboard</h1>
+                <h1 class="dashboard-title">Diabetes Insights – An Interactive Dashboard for Public Health Analytics</h1>
+                <!-- <img src="static/images/logo-dashboard.png" alt="Diabetes Insights Dashboard Logo" class="dashboard-logo" /> -->
             </header>
             <!-- Initial Upload (centered) -->
             <div id="upload-container" style="text-align:center; margin-top: 1rem;">
@@ -38,28 +40,52 @@
     
              <!-- DASHBOARD: Only shown after upload -->
             <div id="dashboard-container" style="display: none;">
-                <!-- Filter Buttons -->
-                <div class="filters">
-                <button class="filter-btn age" onclick="showFilter('age')">Age</button>
-                <button class="filter-btn gender" onclick="showFilter('sex')">Gender</button>
-                <button class="filter-btn education" onclick="showFilter('education')">Education</button>
-                </div>
-
-                <!-- Filter Options -->
-                <div id="filter-options">
-                <div id="age-filters" class="filter-group">...</div>
-                <div id="sex-filters" class="filter-group">...</div>
-                <div id="education-filters" class="filter-group">...</div>
-                </div>
-
                 <!-- Summary Cards -->
+                <br/><br/><br/>
                 <section class="summary-cards">
                 <div class="card">
-                    <p>Total Diabetes Cases: <span id="totalCasesCount" class="count">0</span></p>
+                    <p><br/>Total Patients: <br/>  <span id="totalCasesCount" class="count">0</span></p>
                 </div>
                 <div class="card" id="highestAgeGroupCard">
-                    <p>Highest Affected Age Group: <span id="highestAgeGroup">Loading...</span></p>
+                    <p><br/>Highest Affected Age Group: <span id="highestAgeGroup">Loading...</span></p>
                 </div>
+                <div class="card">
+                    <div class="insight-icon">⚧</div>
+                    <div class="insight-title">Diabetes Cases by Gender</div>
+                    <div class="gender-meter">
+                        <div id="maleBar" class="gender-bar male"></div>
+                        <div id="femaleBar" class="gender-bar female"></div>
+                      </div>
+                      <div class="gender-meter-labels">
+                        <span id="maleLabel">--</span>
+                        <span id="femaleLabel">--</span>
+                      </div>
+                  </div>
+                  <div class="card">
+                    <div class="insight-icon">🩸🩺🫀</div>
+                    <div class="insight-title">Diabetics with High BP</div>
+                    <canvas id="bpDonutChart" width="110" height="110" style="margin: auto;"></canvas>
+                    <div class="donut-center" id="bpPercentText">--%</div>
+                  </div>
+                </section>
+
+
+                <!-- Navigation Cards Row -->
+                <section class="navigation-cards">
+                    <div class="nav-card" onclick="location.href='diabetes_trends.html'">
+                    <h4>🧮 Diabetes Trends</h4>
+                    <p>View how cases vary across age, gender, and education.</p>
+                    </div>
+                
+                    <div class="nav-card" onclick="location.href='health_factors.html'">
+                    <h4>⚕️ Health-Related Factors</h4>
+                    <p>Dive into physical health, behaviors, and risk indicators.</p>
+                    </div>
+                
+                    <div class="nav-card" onclick="location.href='health_disparities.html'">
+                    <h4>🌍 Health Disparities</h4>
+                    <p>Understand how diabetes affects different socioeconomic groups.</p>
+                    </div>
                 </section>
             </div>
             </main>
