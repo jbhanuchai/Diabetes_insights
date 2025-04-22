@@ -86,26 +86,11 @@ let selectedGender = "All";
 
 // Create tooltip once
 let tooltip = d3.select("body").select(".tooltip");
-if (tooltip.empty()) {
-  tooltip = d3.select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("background", "rgba(255, 255, 0, 0.95)")
-    .style("border", "1px solid red")
-    .style("color", "#000")
-    .style("padding", "8px 12px")
-    .style("font-size", "13px")
-    .style("font-family", "Poppins, sans-serif")
-    .style("border-radius", "6px")
-    .style("box-shadow", "0 2px 8px rgba(0,0,0,0.3)")
-    .style("pointer-events", "none")
-    .style("opacity", 0)
-    .style("z-index", 10000)
-    .style("max-width", "260px")
-    .style("white-space", "normal")
-    .style("word-wrap", "break-word");
-}
+    if (tooltip.empty()) {
+        tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip");
+    }
 
 async function renderGenderEducationStackedBar() {
   const data = await fetch(`${API_BASE}/data/education_gender_diabetes`).then(res => res.json());
@@ -125,9 +110,9 @@ async function renderGenderEducationStackedBar() {
     return entry;
   });
 
-  const margin = { top: 40, right: 100, bottom: 100, left: 70 },
+  const margin = { top: 40, right: 100, bottom: 40, left: 70 },
         width = 800 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 330 - margin.top - margin.bottom;
 
   d3.select("#chart-education-gender").html("");
 
@@ -272,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderGenderEducationStackedBar();
     renderIncomeGroupedBar();
     renderGenderPieChart();
+    renderMobilityByDiabetesBar();
   });
   
   document.getElementById("toggleScaleSwitch").addEventListener("change", (e) => {
@@ -322,9 +308,9 @@ async function renderIncomeGroupedBar() {
     return entry;
   });
 
-  const margin = { top: 40, right: 30, bottom: 100, left: 70 },
+  const margin = { top: 40, right: 30, bottom: 40, left: 70 },
         width = 800 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 330 - margin.top - margin.bottom;
 
   d3.select("#grouped-bar-income").html("");
 
@@ -433,7 +419,7 @@ async function renderGenderPieChart() {
   const data = await fetch(`${API_BASE}/data/gender_split_diabetic`).then(res => res.json());
 
   d3.select("#pie-gender").html(""); // Clear previous chart
-  const width = 650, height = 400, radius = Math.min(width, height) / 2;
+  const width = 650, height = 330, radius = Math.min(width, height) / 2;
 
   const svg = d3.select("#pie-gender")
     .append("svg")
@@ -474,8 +460,7 @@ async function renderGenderPieChart() {
       tooltip.transition().duration(150).style("opacity", 1);
       tooltip.html(`
         <strong>Gender:</strong> ${d.data.gender}<br/>
-        <strong>Count:</strong> ${d.data.count}<br/>
-        <strong>Percent:</strong> ${d.data.percent}%
+        <strong>${showPercentage ? "Percent" : "Count"}:</strong> ${showPercentage ? d.data.percent + "%" : d.data.count}
       `);
     })
     .on("mousemove", (event) => {
@@ -561,9 +546,9 @@ async function renderMobilityByDiabetesBar() {
     return result;
   });
 
-  const margin = { top: 40, right: 30, bottom: 100, left: 70 },
+  const margin = { top: 40, right: 30, bottom: 40, left: 70 },
         width = 800 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 330 - margin.top - margin.bottom;
 
   d3.select("#mobility-bar").html("");
 
@@ -624,7 +609,7 @@ async function renderMobilityByDiabetesBar() {
       tooltip.html(`
         <strong>${filter === "income" ? "Income" : "Education"}:</strong> ${d.group}<br/>
         <strong>${d.key}</strong><br/>
-        <strong>Mobility Difficulty:</strong> ${d.value}%
+        <strong>Mobility Difficulty:</strong> ${d.value}${showPercentage ? "%" : ""}
       `);
     })
     .on("mousemove", (event) => {

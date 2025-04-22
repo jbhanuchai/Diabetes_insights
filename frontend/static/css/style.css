@@ -22,7 +22,7 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 260px;
+    width: 230px;
     height: 100vh;
     background-color: #162447;
     color: white;
@@ -65,6 +65,10 @@ body {
 /* Main Content */
 .content {
     flex: 1;
+    flex-grow: 1;
+    flex-direction: column;
+    overflow: hidden;
+    display: flex;
     padding: 5px;
     background: #f8f9fa;
     margin-left: 260px;
@@ -109,6 +113,41 @@ body {
     justify-content: center;
     gap: 10px;
     margin-bottom: 30px;
+}
+
+.top-filter-bar {
+  display: flex;
+  justify-content: center;     /* Center main content */
+  align-items: center;
+  position: relative;          /* For absolutely positioning the reset button */
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.center-filters {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.reset-button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.75rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background-color: #c0392b;
 }
 
 /* Filter Buttons */
@@ -278,23 +317,23 @@ body {
 }
 
 .tooltip {
-    position: absolute;
-    background-color: rgba(255, 255, 0, 0.95);
-    color: #000;
-    border: 1px solid red;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-family: 'Poppins', sans-serif;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 10000;
-    max-width: 260px;
-    white-space: normal;
-    word-wrap: break-word;
-  }  
+  position: absolute;
+  background-color: #ffffff; /* Soft white */
+  color: #1f4068;            /* Navy blue text */
+  border: 1px solid #ccc;    /* Light grey border */
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10000;
+  max-width: 260px;
+  white-space: normal;
+  word-wrap: break-word;
+}
 
 .container, .chart-container {
     overflow: visible;
@@ -353,8 +392,9 @@ body {
   }
   
   #scaleLabel {
-    font-size: 14px;
+    font-size: large;
     color: #333;
+    font-weight: bold;
   }
   
   .modern-toggle {
@@ -491,10 +531,15 @@ body {
       grid-template-columns: 1fr;
     }
   }
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;  /* Prevents scroll */
+  }
   .chart-card {
     background: #ffffff;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     min-height: 400px;         /* Slightly smaller to fit better */
     max-height: 100%;
