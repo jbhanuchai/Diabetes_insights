@@ -14,6 +14,11 @@ body {
   overflow: hidden; 
 }
 
+.sidebar h3,
+.sidebar label,
+.sidebar .slider-label {
+  color: white;
+}
 
 /* Sidebar */
 .sidebar {
@@ -446,11 +451,29 @@ body {
   font-family: inherit;
 }
 
-.donut-chart {
-  min-width: 160px;
-  margin: 1rem auto;
-  text-align: center;
-}
+.donut-charts-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 3rem;
+    row-gap: 2rem;
+    margin-top: 3rem;
+    padding-left: 2rem; 
+    padding-right: 2rem;
+  
+  }
+  
+  .donut-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+  }
+  .donut-chart svg {
+    display: block;
+    margin: 0 auto;
+  }
 
   .chart-grid {
     display: grid;
@@ -613,3 +636,99 @@ select {
   font-family: inherit;
   font-size: 14px;
 }
+
+.scatter-wrapper {
+    position: relative;
+    width: 100%;
+    height: 500px;
+  }
+  
+  .scatter-wrapper canvas,
+  .scatter-wrapper svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .chart-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 1.5rem;
+  }
+  
+  .chart-left {
+    flex: 0.8;
+    max-width: 52%;
+    min-width: 500px;
+  }
+  
+  
+  .chart-right {
+    flex: 1.2;               
+    max-width: 48%;
+    min-width: 400px;
+    padding: 0.5rem 1rem 1rem 0rem; 
+  }
+  
+  .donut-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 1rem;
+    flex: 1 1 320px;
+    max-width: 340px;
+    min-width: 300px;
+    min-height: 360px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  input[type="range"] {
+    height: 2px; /* makes the track thin */
+    background: #5ab8b8; /* or your desired track color */
+    outline: none;
+  }
+  
+  /* Optional: style the thumb smaller too */
+  input[type="range"]::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #43a2ca;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -5px; /* adjusts thumb position to align with thin track */
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #43a2ca;
+    cursor: pointer;
+  }
+  #scatterplot-legend {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-left: 10px;
+  }
+  
+  #scatterplot-legend div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  #scatterplot-legend div div {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }

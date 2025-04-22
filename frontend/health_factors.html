@@ -98,25 +98,41 @@
             </header>
             
             <section class="chart-container" id="chart-container">
-                <div class="bg-white p-4 rounded-lg shadow-md flex-1">
-                    <div id="kpiCards" class="summary-cards" style="margin-top: 2rem;">
-                        <div class="card" id="kpi-total">Total Patients: –</div>
-                        <div class="card" id="kpi-bmi">Avg BMI: –</div>
-                        <div class="card" id="kpi-phys">Avg PhysHlth: –</div>
-                        <div class="card" id="kpi-diabetic">Diabetic: –</div>
-                      </div>                      
-                    <br/>  
-                    <h3>Explore how BMI and physical health relate to diabetes</h3>
-                    <canvas id="scatterplot" class="w-full h-auto"></canvas>
-                    <div class="donut-charts-container" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
-                        <div class="donut-chart" id="smokerChart"></div>
-                        <div class="donut-chart" id="activityChart"></div>
-                        <div class="donut-chart" id="healthcareChart"></div>
-                        <div class="donut-chart" id="docCostChart"></div>
+                <!-- KPI cards outside of flex row to align both charts -->
+                <div id="kpiCards" class="summary-cards" style="margin: 2rem 0; display: flex; gap: 1rem;">
+                  <div class="card" id="kpi-total">Total Patients: –</div>
+                  <div class="card" id="kpi-bmi">Avg BMI: –</div>
+                  <div class="card" id="kpi-phys">Avg PhysHlth: –</div>
+                  <div class="card" id="kpi-diabetic">Diabetic: –</div>
+                </div>                    
+                     
+                <div class="chart-flex-row">
+                    <!-- Left Side: Scatterplot + Donuts -->
+                    <div class="chart-left">
+                      <div class="bg-white p-4 rounded-lg shadow-md">
+                        <h3>Explore how BMI and physical health relate to diabetes</h3>
+                        <div class="scatter-wrapper" style="position: relative; width: 100%; height: 500px;">
+                          <canvas id="scatterplot" class="w-full h-auto" style="position: absolute; top: 0; left: 0;"></canvas>
+                          
+                        </div>
+                              
+                        <div class="donut-charts-container" style="display: flex; justify-content: space-around; flex-wrap: nowrap; margin-top: 2rem; gap: 1.5rem;">
+                            <div class="donut-card"><div class="donut-chart" id="smokerChart"></div></div>
+                            <div class="donut-card"><div class="donut-chart" id="activityChart"></div></div>
+                            <div class="donut-card"><div class="donut-chart" id="healthcareChart"></div></div>
+                            <div class="donut-card"><div class="donut-chart" id="docCostChart"></div></div>
+                            
+                        </div>
                       </div>
+                    </div>
+                  
+                    <!-- Right Side: Line Chart -->
+                    <div class="chart-right">
+                      <h3 style="text-align: center; margin-bottom: 1rem;">Patient Distribution by Age Group</h3>
+                      <svg id="lineChart" width="100%" height="420px"></svg>
+                    </div>
+                  </div>
                 </div>
-                <h3 style="margin-top: 3rem;">Patient Distribution by Age Group</h3>
-                <svg id="lineChart"></svg>
             </section>
         </main>
     </div>

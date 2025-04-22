@@ -23,9 +23,9 @@ export function updateDonutCharts(data) {
 }
 
 function drawDonut(containerSelector, labels, values, title) {
-    const width = 360;
-    const height = 180;
-    const radius = 50;
+    const width = 400;
+    const height = 200;
+    const radius = 60;
     const total = values[0] + values[1];
 
     if (total === 0) {
@@ -44,7 +44,9 @@ function drawDonut(containerSelector, labels, values, title) {
     const svg = d3.select(containerSelector)
         .append("svg")
         .attr("width", width)
-        .attr("height", height + 30);
+        .attr("height", height + 40) 
+        .style("display", "block")
+        .style("margin", "0 auto");
 
    // Legend at top (dots spaced horizontally)
 const legend = svg.append("g")
@@ -73,7 +75,7 @@ labels.forEach((label, i) => {
 
     // Chart group (centered donut below legend)
     const chartGroup = svg.append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2 + 20})`);
+        .attr("transform", `translate(${width/2 }, ${height / 2 + 10})`);
 
     const donutData = [
         { label: "No", value: values[0] },
@@ -81,8 +83,8 @@ labels.forEach((label, i) => {
     ].filter(d => d.value > 0);
 
     const pie = d3.pie().sort(null).value(d => d.value);
-    const arc = d3.arc().innerRadius(30).outerRadius(radius);
-    const outerArc = d3.arc().innerRadius(radius + 8).outerRadius(radius + 8);
+    const arc = d3.arc().innerRadius(40).outerRadius(radius);
+    const outerArc = d3.arc().innerRadius(radius + 12).outerRadius(radius + 12);
 
     const arcs = chartGroup.selectAll("arc")
         .data(pie(donutData))
@@ -100,7 +102,7 @@ labels.forEach((label, i) => {
             const posA = arc.centroid(d);
             const posB = outerArc.centroid(d);
             const posC = [...posB];
-            posC[0] = (posB[0] > 0) ? posB[0] + 20 : posB[0] - 20;
+            posC[0] = (posB[0] > 0) ? posB[0] + 35 : posB[0] - 35;
             return [posA, posB, posC];
         })
         .style("fill", "none")
@@ -116,7 +118,7 @@ labels.forEach((label, i) => {
         })
         .attr("transform", d => {
             const pos = outerArc.centroid(d);
-            const offset = (pos[0] > 0) ? 20 : -20;
+            const offset = (pos[0] > 0) ? 12 : -12;
             return `translate(${pos[0] + offset}, ${pos[1]})`;
         })
         .style("text-anchor", d => (outerArc.centroid(d)[0] > 0 ? "start" : "end"))
@@ -124,8 +126,8 @@ labels.forEach((label, i) => {
         .style("font-weight", "bold");
 
     svg.append("text")
-        .attr("x", width / 2 - 30)
-        .attr("y", height + 15)
+        .attr("x", width / 2)
+        .attr("y", height + 30)
         .attr("text-anchor", "middle")
         .style("font-size", "13px")
         .style("font-weight", "500")
