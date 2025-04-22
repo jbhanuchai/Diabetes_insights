@@ -206,13 +206,13 @@ def income_diabetes():
 
     results = []
     for _, row in grouped.iterrows():
-        income = INCOME_LEVELS.get(int(row["Income"]), str(row["Income"]))
+        income = int(row["Income"])
         diabetes = diabetes_labels.get(int(row["Diabetes_012"]), "Unknown")
         count = int(row["count"])
         total = total_per_income.get(row["Income"], 1)
         percent = round((count / total) * 100, 2)
         results.append({
-            "income": income,
+            "income": int(row["Income"]),
             "diabetes": diabetes,
             "count": count,
             "percent": percent
@@ -265,8 +265,8 @@ def mobility_by_diabetes():
             percent = round((count_diff / total) * 100, 2) if total > 0 else 0
             
             results.append({
-                "group": INCOME_LEVELS.get(int(group_val), str(group_val)) if group_col == "Income" else EDUCATION_LEVELS.get(int(group_val), str(group_val))
-,                "diabetes": diabetes_status,
+                "group": int(group_val) if group_col == "Income" else EDUCATION_LEVELS.get(int(group_val), str(group_val)),
+                "diabetes": diabetes_status,
                 "count": int(count_diff),
                 "total": int(total),
                 "percent": percent
