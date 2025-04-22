@@ -124,12 +124,4 @@ labels.forEach((label, i) => {
         .style("text-anchor", d => (outerArc.centroid(d)[0] > 0 ? "start" : "end"))
         .style("font-size", "11px")
         .style("font-weight", "bold");
-
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height + 30)
-        .attr("text-anchor", "middle")
-        .style("font-size", "13px")
-        .style("font-weight", "500")
-        .text(title);
 }

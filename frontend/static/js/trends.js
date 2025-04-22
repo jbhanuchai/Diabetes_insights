@@ -230,7 +230,7 @@ async function renderGroupedBarChart() {
     const svgId = "#bar-chart-education";
     d3.select(svgId).selectAll("*").remove();
 
-    const margin = { top: 30, right: 130, bottom: 70, left: 60 };
+    const margin = { top: 40, right: 130, bottom: 120, left: 60 };
     const width = 700 - margin.left - margin.right;
     const height = 425 - margin.top - margin.bottom;
 
@@ -315,14 +315,14 @@ async function renderGroupedBarChart() {
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height + 60)
+        .attr("y", height + 85)
         .style("font-size", "14px")
         .style("font-weight", "bold")
         .style("opacity", 0)
         .text("Education Level")
         .transition()
         .duration(750)
-        .attr("y", height + 45)
+        .attr("y", height + 90)
         .style("opacity", 1);
     svg.append("text")
         .attr("text-anchor", "middle")
