@@ -26,6 +26,7 @@ async function fetchScatterData() {
         
         // Parse numeric fields and filter out invalid entries
         const validData = data.map(d => ({
+            Age: +d.Age,
             BMI: +d.BMI,
             PhysHlth: +d.PhysHlth,
             Diabetes_012: +d.Diabetes_012,
@@ -269,6 +270,7 @@ function setupBrushing(data, chart, pointSize, bmiMin, bmiMax, physMin, physMax,
             // This is the key line to update the donuts:
             updateDonutCharts(selection ? brushedPoints : filteredData);
             updateKpiCards(selection ? brushedPoints : filteredData);
+            updateLineChart(selection ? brushedPoints : filteredData);
         });
         
 
@@ -407,6 +409,7 @@ function setupSliders(data, chart, selectedCategory) {
         );
         updateDonutCharts(filteredData);
         updateKpiCards(filteredData);
+        updateLineChart(filteredData);
         // Update brushing with the filtered data using chart.svg
         chart.svg.select(".brush").remove();
         setupBrushing(
@@ -465,3 +468,105 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     setupSliders(data, chart, selectedCategory);
 });
+
+function updateLineChart(data) {
+    const svgId = "#lineChart";
+    let svg = d3.select(svgId);
+    svg.selectAll("*").remove();
+
+    const margin = { top: 30, right: 40, bottom: 50, left: 60 };
+    const width = 700 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    const g = svg
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const AGE_GROUPS = {
+        1: "18-24", 2: "25-29", 3: "30-34", 4: "35-39",
+        5: "40-44", 6: "45-49", 7: "50-54", 8: "55-59",
+        9: "60-64", 10: "65-69", 11: "70-74", 12: "75-79", 13: "80+"
+    };
+
+    const grouped = d3.rollup(data, v => v.length, d => AGE_GROUPS[d.Age] || "Unknown");
+
+    const formattedData = Array.from(grouped.entries())
+        .map(([group, value]) => ({ group, value }))
+        .sort((a, b) => {
+            // sort by age group order
+            const order = Object.values(AGE_GROUPS);
+            return order.indexOf(a.group) - order.indexOf(b.group);
+        });
+
+    const x = d3.scalePoint()
+        .domain(formattedData.map(d => d.group))
+        .range([0, width])
+        .padding(0.5);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(formattedData, d => d.value)])
+        .nice()
+        .range([height, 0]);
+
+    const line = d3.line()
+        .x(d => x(d.group))
+        .y(d => y(d.value))
+        .curve(d3.curveMonotoneX);
+
+    g.append("path")
+        .datum(formattedData)
+        .attr("fill", "none")
+        .attr("stroke", "#1f77b4")
+        .attr("stroke-width", 2.5)
+        .attr("d", line);
+
+    g.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "rotate(-40)")
+        .style("text-anchor", "end");
+
+    g.append("g")
+        .call(d3.axisLeft(y));
+    
+    // X Axis Label
+    g.append("text")
+    .attr("x", width / 2)
+    .attr("y", height + 45)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#333")
+    .attr("font-size", "13px")
+    .text("Age Group");
+
+    // Y Axis Label
+    g.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -45)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#333")
+    .attr("font-size", "13px")
+    .text("Number of Patients");
+
+    g.selectAll("circle")
+        .data(formattedData)
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(d.group))
+        .attr("cy", d => y(d.value))
+        .attr("r", 4)
+        .attr("fill", "#1f77b4");
+
+    g.selectAll("text.label")
+        .data(formattedData)
+        .enter()
+        .append("text")
+        .attr("x", d => x(d.group))
+        .attr("y", d => y(d.value) - 10)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .text(d => d.value);
+}
