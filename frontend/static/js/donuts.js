@@ -37,7 +37,7 @@ function drawDonut(containerSelector, labels, values, title) {
 
     const color = d3.scaleOrdinal()
         .domain(["No", "Yes"])
-        .range(["#bdbdbd", "#43a2ca"]);
+        .range(["#bee9e8", "#1b4965"]);
 
     d3.select(containerSelector).selectAll("*").remove();
 
