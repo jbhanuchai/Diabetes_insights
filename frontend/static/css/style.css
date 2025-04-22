@@ -582,3 +582,17 @@ body {
   margin-left: 0.5rem;           
 }
 
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 30px;
+  justify-items: center;
+  align-items: start;
+}
+
+#heatmap-age-income {
+  grid-column: 1 / span 2;
+  justify-self: center;
+  margin-top: 20px;
+}
