@@ -86,17 +86,35 @@ def get_summary():
         return jsonify({
             "total_cases": None,
             "highest_age_group": None,
-            "top_risk_factor": None
+            "top_risk_factor": None,
+            "gender_male": None,
+            "gender_female": None,
+            "bp_rate": None
         }), 200
-    total_cases = df["Diabetes_012"].count()
-    highest_age_group_num = df["Age"].value_counts().idxmax()  # Most common age group (1-13)
-    highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")  # Convert to readable format
+
+    total_cases = df[df["Diabetes_012"].isin([0, 1, 2])].shape[0]
+    highest_age_group_num = df["Age"].value_counts().idxmax()
+    highest_age_group = AGE_GROUPS.get(highest_age_group_num, "Unknown")
     top_risk_factor = df.drop(columns=["Diabetes_012"]).corrwith(df["Diabetes_012"]).abs().idxmax()
+
+    # Gender % Calculation
+    male = df[(df["Diabetes_012"] == 2) & (df["Sex"] == 1)].shape[0]
+    female = df[(df["Diabetes_012"] == 2) & (df["Sex"] == 0)].shape[0]
+    total_gender = male + female
+    male_pct = round((male / total_gender) * 100, 1) if total_gender > 0 else 0
+    female_pct = round((female / total_gender) * 100, 1) if total_gender > 0 else 0
+
+    # High BP among Diabetics
+    high_bp_rate = df[df["Diabetes_012"] == 2]["HighBP"].mean() * 100  # Assumes HighBP is 0/1
+    high_bp_rate = round(high_bp_rate, 1)
 
     summary = {
         "total_cases": int(total_cases),
-        "highest_age_group": highest_age_group,  # Now returns "55-59" instead of 8
-        "top_risk_factor": top_risk_factor
+        "highest_age_group": highest_age_group,
+        "top_risk_factor": top_risk_factor,
+        "gender_male": male_pct,
+        "gender_female": female_pct,
+        "bp_rate": high_bp_rate
     }
     return jsonify(summary)
 
@@ -206,13 +224,13 @@ def income_diabetes():
 
     results = []
     for _, row in grouped.iterrows():
-        income = INCOME_LEVELS.get(int(row["Income"]), str(row["Income"]))
+        income = int(row["Income"])
         diabetes = diabetes_labels.get(int(row["Diabetes_012"]), "Unknown")
         count = int(row["count"])
         total = total_per_income.get(row["Income"], 1)
         percent = round((count / total) * 100, 2)
         results.append({
-            "income": income,
+            "income": int(row["Income"]),
             "diabetes": diabetes,
             "count": count,
             "percent": percent
@@ -265,8 +283,8 @@ def mobility_by_diabetes():
             percent = round((count_diff / total) * 100, 2) if total > 0 else 0
             
             results.append({
-                "group": INCOME_LEVELS.get(int(group_val), str(group_val)) if group_col == "Income" else EDUCATION_LEVELS.get(int(group_val), str(group_val))
-,                "diabetes": diabetes_status,
+                "group": int(group_val) if group_col == "Income" else EDUCATION_LEVELS.get(int(group_val), str(group_val)),
+                "diabetes": diabetes_status,
                 "count": int(count_diff),
                 "total": int(total),
                 "percent": percent

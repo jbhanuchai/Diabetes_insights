@@ -306,6 +306,7 @@ body {
     min-width: 250px;
     text-align: center;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    position:relative;
 }
 
 /* Responsive Layout */
@@ -789,4 +790,130 @@ select {
     max-width: 150px; 
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .navigation-cards {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 50px;
+  }
+  
+  .nav-card {
+    background-color: #1f4068;
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 12px;
+    width: 300px;
+    min-height: 160px;
+    text-align: center;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .nav-card:hover {
+    background-color: #e43f5a;
+    transform: translateY(-5px);
+  }
+  
+  .nav-card h4 {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  
+  .nav-card p {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .dashboard-logo {
+    max-width: 40%;
+    height: auto;
+    margin: 0 auto 30px auto;
+    display: block;
+  }
+  
+  .aligned-summary-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+  
+  .insight-card {
+    background: #ffffff;
+    color: #1f4068;
+    text-align: center;
+    border-radius: 12px;
+    padding: 20px 16px;
+    width: 260px;
+    min-height: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    position: relative;
+  }
+  
+  .insight-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  
+  .insight-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    margin-bottom: 5px;
+  }
+  
+  .insight-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  /* Donut Chart center label */
+  .donut-center {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    pointer-events: none;
+  }
+  
+  .gender-meter {
+    display: flex;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    background-color: #e0e0e0;
+  }
+  
+  .gender-bar {
+    height: 100%;
+  }
+  
+  .gender-bar.male {
+    background-color: #3498db;
+  }
+  
+  .gender-bar.female {
+    background-color: #e91e63;
+  }
+  
+  .gender-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+    margin-top: 4px;
   }

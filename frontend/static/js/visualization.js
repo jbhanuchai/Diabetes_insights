@@ -286,7 +286,7 @@ async function renderIncomeGroupedBar() {
   const raw = await response.json();
 
   const diabetesTypes = ["No Diabetes", "Pre-Diabetes", "Diabetes"];
-  const incomeGroups = Array.from(new Set(raw.map(d => d.income))).sort();
+  const incomeGroups = Array.from(new Set(raw.map(d => +d.income))).sort((a, b) => a - b);
 
   const grouped = d3.group(raw, d => d.income);
   const totals = Object.fromEntries(
@@ -536,7 +536,8 @@ async function renderMobilityByDiabetesBar() {
     2: "Diabetes"
   };
 
-  const groups = Array.from(new Set(data.map(d => d.group))).sort();
+  const groups = Array.from(new Set(data.map(d => d.group)))
+  .sort((a, b) => filter === "income" ? a - b : a.localeCompare(b));
   const transformed = groups.map(g => {
     const result = { group: g };
     data.filter(d => d.group === g).forEach(d => {
@@ -580,7 +581,8 @@ async function renderMobilityByDiabetesBar() {
     .join("g")
     .attr("class", "x-axis")
     .attr("transform", `translate(0,${height})`);
-  xAxis.transition().duration(1000).call(d3.axisBottom(x0));
+    xAxis.transition().duration(1000)
+    .call(d3.axisBottom(x0).tickFormat(d => filter === "income" ? INCOME_LEVELS[d] || d : d));  
   xAxis.selectAll("text")
     .attr("transform", "rotate(-35)")
     .style("text-anchor", "end");
@@ -607,7 +609,7 @@ async function renderMobilityByDiabetesBar() {
     .on("mouseover", (event, d) => {
       tooltip.transition().duration(150).style("opacity", 1);
       tooltip.html(`
-        <strong>${filter === "income" ? "Income" : "Education"}:</strong> ${d.group}<br/>
+        <strong>${filter === "income" ? "Income" : "Education"}:</strong> ${filter === "income" ? INCOME_LEVELS[d.group] : d.group}
         <strong>${d.key}</strong><br/>
         <strong>Mobility Difficulty:</strong> ${d.value}${showPercentage ? "%" : ""}
       `);
