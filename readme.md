@@ -1,95 +1,85 @@
 # Diabetes Insights – An Interactive Dashboard for Public Health Analytics
 
-## Project Overview
-The Diabetes Insights dashboard visualizes patterns of diabetes prevalence across different demographic groups and health behaviors.Users can explore how factors such as age, gender, education level, BMI, smoking status, physical activity, and healthcare access impact diabetes risk. It is intended to serve healthcare professionals, researchers, policymakers, and general users interested in understanding diabetes trends and risk factors.
+## Overview
 
-The dashboard is designed following the key information visualization principles:
+**Diabetes Insights** is an interactive data visualization dashboard designed to explore diabetes prevalence and associated risk factors across different population groups.  
+Leveraging publicly available health data, the dashboard enables users to investigate how variables such as:
 
-- Clarity and simplicity
-- Interactive exploration
-- Detail on demand
-- Consistency and cognitive load reduction
+- Age
+- Gender
+- Education
+- BMI
+- Physical Activity
+- Smoking Status
+- Healthcare Access  
 
-# 1. Features
+relate to diabetes outcomes.
 
-## Multi-page Dashboard:
-- Overview Page: General diabetes insights.
-- Demographic Analysis: Explore prevalence by age, gender, education.
-- Health Factors: Analyze BMI, physical health, smoking, physical activity, healthcare access.
-- Social Gradient: Visualize how income and education disparities impact diabetes rates.
-## Interactive Visualizations:
-- Brushing and linking across scatterplots and donut charts.
-- Hover tooltips for detailed information.
-- Dropdown filters for diabetes classes and gender categories.
-- Responsive layout for different screen sizes.
-## Data-Driven Insights:
-- Clearly labeled and color-coded visual elements.
-- Supports exploration of health disparities and social determinants of diabetes risk.
+Built using **HTML**, **CSS**, **JavaScript** (with **D3.js** and **Chart.js**), the dashboard provides an intuitive, responsive, and user-driven exploration experience.  
+It includes interactive charts, dynamic filtering, brushing, and detail-on-demand features.  
+Optional backend support is available via **Flask** and **Python** for dynamic data processing and API integration.
 
-## 2. Prerequisites
+## Features
 
-Before running the project ensure you have the following installed 
+- **Interactive Visualizations:** Line graphs, bar charts, heatmaps, scatterplots, and donut charts.
+- **Dynamic Filtering:** Filter by demographics, diabetes status, income groups, and more.
+- **Brushing & Hover Effects:** Explore specific groups and discover hidden patterns.
+- **Responsive Design:** Works smoothly across laptops, tablets, and mobile devices.
+- **Real-Time Updates:** Filters update charts immediately without reloading.
 
-- A modern web browser (such as Google Chrome, Mozilla Firefox, or Microsoft Edge) for viewing and interacting with the dashboard.
-- A **virtual environment (venv)** set up
-- Python 3.x installed - (Needed only if you want to run the backend server for dynamic data loading.)
-- Required Python libraries
+## Target Audience
 
-## **3. Setting Up the Virtual Environment**
+- **Healthcare Professionals** — for population risk analysis and clinical insights.
+- **Researchers** — for analyzing behavioral, clinical, and social determinants of health.
+- **Policymakers** — for identifying high-risk groups and supporting interventions.
+- **General Public** — for improving awareness about diabetes risk factors.
 
-To maintain dependencies and avoid conflicts, create and activate a virtual environment:
+## Technology Stack
 
-### **Windows**
+- **Frontend:**  
+  - HTML5
+  - CSS3
+  - JavaScript (D3.js, Chart.js)
+
+- **Backend (Optional):**
+  - Python (Flask)
+  - Pandas (for data processing)
+
+## Project Motivation
+
+Existing dashboards often lacked:
+- Interactivity and multi-factor exploration
+- Focus on behavioral and social determinants (e.g., income, education)
+- Accessibility for non-technical audiences
+
+**Diabetes Insights** bridges these gaps by offering a dynamic, exploratory, and user-friendly platform for analyzing diabetes-related health data.
+
+## Structure
+
+| Page | Description |
+|:-----|:------------|
+| **Overview** | Home base with quick stats and navigation |
+| **Demographic Trends** | Diabetes trends by age, education, and income |
+| **Health-Related Factors** | Behavioral risk factors like BMI, smoking, physical health |
+| **Health Disparities** | Gender-based, income-based, and education-based disparities |
+
+## Installation (Optional - For Backend)
+
 ```bash
-python -m venv venv
-venv\Scripts\activate
+# Clone the repository
+git clone https://github.com/yourusername/diabetes-insights-dashboard.git
+
+# Navigate into the project directory
+cd diabetes-insights-dashboard
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Run the Flask app
+python app.py
 ```
 
-### **Mac/Linux**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-Ensure that all necessary Python packages are installed before proceeding.
-
-
-## 4. Technologies Used
-
-- HTML / CSS / JavaScript
-- D3.js (for dynamic and interactive visualizations)
-- Chart.js (for supporting simple chart structures)
-- Pandas and Flask (for data preparation and API, if running locally)
-
-## 5. Clone the Repository
-
-
-```python
-! git clone https://github.com/jbhanuchai/Diabetes_insights.git
-! cd Diabetes_insights
-
-```
-
-    Cloning into 'Diabetes_insights'...
-    remote: Enumerating objects: 472, done.
-    remote: Counting objects: 100% (120/120), done.
-    remote: Compressing objects: 100% (72/72), done.
-    remote: Total 472 (delta 64), reused 86 (delta 39), pack-reused 352 (from 1)
-    Receiving objects: 100% (472/472), 10.62 MiB | 11.43 MiB/s, done.
-    Resolving deltas: 100% (270/270), done.
-
-
-## 6. Project Structure 
-
-- backend/ – Python backend scripts (app.py, eda.py, preprocessing.py) and data files
-- frontend/ – All dashboard code:
-- static/ → CSS, JavaScript (D3.js), and optional images
-- .html files → Main dashboard pages (index.html, diabetes_trends.html, etc)
-- requirements.txt – Python dependencies (for backend use)
-- package.json – npm setup (for running live-server)
-- README.md – Project documentation
-
-## 7. Running the Project 
+## Running the Project 
 
 - To run the dashboard (frontend) the user need to install 
    - Node.js
@@ -105,4 +95,25 @@ npx live-server --port=5500
 ```bash
 cd Diabetes_insights/backend
 python3 app.py  
+```
+
+Frontend files (index.html, CSS, JS) can be opened directly without Flask unless dynamic APIs are used.
+
+## Folder Structure
+```
+diabetes-insights-dashboard/
+│
+├── static/
+│   ├── css/
+│   └── js/
+│
+├── templates/
+│   └── index.html
+│
+├── data/
+│   └── diabetes_data.csv
+│
+├── app.py  (optional backend)
+├── README.md
+└── requirements.txt
 ```
