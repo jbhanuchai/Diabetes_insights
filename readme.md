@@ -17,7 +17,7 @@ relate to diabetes outcomes.
 
 Built using **HTML**, **CSS**, **JavaScript** (with **D3.js** and **Chart.js**), the dashboard provides an intuitive, responsive, and user-driven exploration experience.  
 It includes interactive charts, dynamic filtering, brushing, and detail-on-demand features.  
-Optional backend support is available via **Flask** and **Python** for dynamic data processing and API integration.
+backend support is available via **Flask** and **Python** for dynamic data processing and API integration.
 
 ## Features
 
@@ -41,7 +41,7 @@ Optional backend support is available via **Flask** and **Python** for dynamic d
   - CSS3
   - JavaScript (D3.js, Chart.js)
 
-- **Backend (Optional):**
+- **Backend**
   - Python (Flask)
   - Pandas (for data processing)
 
@@ -95,7 +95,7 @@ diabetes-insights-dashboard/
 ├── data/
 │   └── diabetes_data.csv
 │
-├── app.py  (optional backend)
+├── app.py
 ├── README.md
 └── requirements.txt
 ```
