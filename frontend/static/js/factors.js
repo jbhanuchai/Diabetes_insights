@@ -99,20 +99,22 @@ function renderScatterplot(data) {
 
     // Legend
     const legend = svg.append("g")
-        .attr("transform", `translate(${width - 120}, 10)`);
+        .attr("transform", `translate(${width - 10}, -10)`)
+        .attr("text-anchor", "end"); 
 
-    ["No Diabetes", "Pre-Diabetes", "Diabetes"].forEach((label, i) => {
-        legend.append("circle")
-            .attr("cx", 0)
-            .attr("cy", i * 20)
-            .attr("r", 5)
-            .attr("fill", colorScale(label));
-        legend.append("text")
-            .attr("x", 10)
-            .attr("y", i * 20 + 5)
-            .text(label)
-            .attr("font-size", "12px");
-    });
+        ["No Diabetes", "Pre-Diabetes", "Diabetes"].forEach((label, i) => {
+            legend.append("circle")
+                .attr("cx", 0)
+                .attr("cy", i * 20)
+                .attr("r", 5)
+                .attr("fill", colorScale(label));
+        
+            legend.append("text")
+                .attr("x", -10)  
+                .attr("y", i * 20 + 5)
+                .text(label)
+                .attr("font-size", "12px");
+        });
 
     return {
         canvas, context, svg,
@@ -510,17 +512,18 @@ function updateLineChart(data) {
         .nice()
         .range([height, 0]);
 
-    const line = d3.line()
-        .x(d => x(d.group))
-        .y(d => y(d.value))
-        .curve(d3.curveMonotoneX);
-
-    g.append("path")
-        .datum(formattedData)
-        .attr("fill", "none")
-        .attr("stroke", "#1f77b4")
-        .attr("stroke-width", 2.5)
-        .attr("d", line);
+        g.selectAll(".bar")
+        .data(formattedData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.group) - 15) // bar offset
+        .attr("y", d => y(d.value))
+        .attr("width", 30)
+        .attr("height", d => height - y(d.value))
+        .attr("fill", "#1f77b4")
+        .attr("rx", 4); // optional: rounded corners
+    
 
     g.append("g")
         .attr("transform", `translate(0,${height})`)
@@ -528,6 +531,40 @@ function updateLineChart(data) {
         .selectAll("text")
         .attr("transform", "rotate(-40)")
         .style("text-anchor", "end");
+
+    const bars = g.selectAll(".bar")
+        .data(formattedData, d => d.group);
+
+    // EXIT
+    bars.exit()
+        .transition()
+        .duration(300)
+        .attr("y", y(0))
+        .attr("height", 0)
+        .remove();
+
+    // UPDATE
+    bars.transition()
+        .duration(500)
+        .attr("x", d => x(d.group) - 15)
+        .attr("y", d => y(d.value))
+        .attr("height", d => height - y(d.value))
+        .attr("width", 30)
+        .attr("fill", "#1f77b4");
+
+    // ENTER
+    bars.enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.group) - 15)
+        .attr("y", y(0))
+        .attr("width", 30)
+        .attr("height", 0)
+        .attr("fill", "#1f77b4")
+        .transition()
+        .duration(500)
+        .attr("y", d => y(d.value))
+        .attr("height", d => height - y(d.value));
 
     g.append("g")
         .call(d3.axisLeft(y));
